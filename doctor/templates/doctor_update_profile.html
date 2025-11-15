@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Update Profile{% endblock %}
+{% block nav_profile %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 1.5rem; /* Only column gap */
+    }
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+    .btn-submit {
+        margin-top: 1.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="page-header">Update My Profile</h1>
+
+<div class="card">
+    <form method="POST" action="{% url 'doctor_update_profile' %}">
+        {% csrf_token %}
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="fname">First Name</label>
+                <input id="fname" name="fname" class="form-input" value="{{ doctor.fname }}" readonly>
+            </div>
+            <div class="form-group">
+                <label for="lname">Last Name</label>
+                <input id="lname" name="lname" class="form-input" value="{{ doctor.lname }}" readonly>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input id="email" name="email" class="form-input" value="{{ doctor.email }}" readonly>
+            </div>
+            <div class="form-group">
+                <label for="contact_number">Contact Number</label>
+                <input id="contact_number" name="contact_number" class="form-input" value="{{ doctor.contact_num }}">
+            </div>
+            <div class="form-group">
+                <label for="specialty">Specialization</label>
+                <input id="specialty" name="specialty" class="form-input" value="{{ doctor.specialization }}">
+            </div>
+            <div class="form-group">
+                <label for="experience_years">Years of Experience</label>
+                <input id="experience_years" name="experience_years" type="number" class="form-input" value="{{ doctor.years_of_experience }}">
+            </div>
+            <div class="form-group full-width">
+                <label for="qualification">Qualification</label>
+                <input id="qualification" name="qualification" class="form-input" value="{{ doctor.qualification }}">
+            </div>
+            <div class="form-group full-width">
+                <label for="office_address">Office Address</label>
+                <textarea id="office_address" name="office_address" class="form-textarea">{{ doctor.address }}</textarea>
+            </div>
+            <div class="form-group full-width">
+                <label for="bio">Biography</label>
+                <textarea id="bio" name="bio" class="form-textarea">{{ doctor.bio }}</textarea>
+            </div>
+        </div>
+        <button type="submit" class="btn-submit btn-submit-green">Save Changes</button>
+    </form>
+</div>
+{% endblock %}

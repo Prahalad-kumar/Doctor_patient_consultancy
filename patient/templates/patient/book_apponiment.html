@@ -1,0 +1,37 @@
+{% extends 'patient/base_dashboard.html' %}
+{% block title %}Book Appointment | HealthBook{% endblock %}
+{% block content %}
+<div style="background-color:var(--card-dark);border-radius:12px;padding:2rem;">
+    <h2 style="color:var(--primary-blue);margin-bottom:1.5rem;">Book Appointment</h2>
+    <p style="color:var(--text-muted);margin-bottom:2rem;">
+        Dr. {{ doctor.fname }} {{ doctor.lname }} – <strong>{{ doctor.specialization }}</strong>
+    </p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div style="margin-bottom:1.5rem;">
+            <label>Date</label>
+            <input type="date" name="date" min="{{ Today|date:'Y-m-d' }}"
+                   style="width:100%;padding:12px;border-radius:8px;border:1px solid var(--border-color);
+                          background-color:var(--bg-dark);color:var(--text-light);">
+        </div>
+
+        <div style="margin-bottom:1.5rem;">
+            <label>Available Time Slots</label>
+            <select name="time"
+                    style="width:100%;padding:12px;border-radius:8px;border:1px solid var(--border-color);
+                           background-color:var(--bg-dark);color:var(--text-light);">
+                {% for t in available_times %}
+                    <option value="{{ t }}">{{ t }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit"
+                style="background-color:var(--success);color:white;padding:12px 24px;
+                       border:none;border-radius:8px;font-weight:bold;cursor:pointer;">
+            Confirm Appointment
+        </button>
+    </form>
+</div>
+{% endblock %}

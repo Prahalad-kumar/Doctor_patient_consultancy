@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}My Schedule{% endblock %}
+{% block nav_schedule %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    .card-header h3 {
+        margin: 0;
+        padding: 0;
+        border: none;
+    }
+    
+    /* Appointments List */
+    .appointment-list { list-style:none; padding-left:0; margin: 0; }
+    .appointment-item {
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center;
+        background-color: var(--bg-dark);
+        padding: 1.25rem; 
+        border-radius: 10px; 
+        margin-bottom: 1rem;
+        border: 1px solid var(--border-color);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .appointment-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    .appointment-item .patient-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-light);
+    }
+    .appointment-item .time {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-top: 0.25rem;
+    }
+    .btn-view {
+        background-color: var(--primary-blue);
+        padding: 8px 16px; 
+        color: white; 
+        border-radius: 8px;
+        text-decoration: none; 
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    .btn-view:hover {
+        background-color: #3a59ff;
+        transform: none;
+        box-shadow: none;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        background-color: var(--bg-dark);
+        border: 1px dashed var(--border-color);
+        border-radius: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<h1 class="page-header">My Schedule</h1>
+
+<div class="card">
+    <div class="card-header">
+        <h3>All Appointments</h3>
+        <form class="filter-form">
+            <label for="date-filter" style="align-self: center; color: var(--text-muted); font-weight: 500;">Filter by Date:</label>
+            <input type="date" id="date-filter" name="date" class="form-input">
+        </form>
+    </div>
+
+    <ul class="appointment-list">
+        <!-- Example Appointment 1 -->
+        <li class="appointment-item">
+            <div class="patient-details">
+                <strong>Rohan Sharma</strong>
+                <span class="subtext">Nov 10, 2025 @ 10:30 AM | New Patient</span>
+            </div>
+            <a href="doctor_patient_details.html" class="btn-view">View Details</a>
+        </li>
+        <!-- Example Appointment 2 -->
+        <li class="appointment-item">
+            <div class="patient-details">
+                <strong>Priya Singh</strong>
+                <span class="subtext">Nov 10, 2025 @ 11:00 AM | Follow-up</span>
+            </div>
+            <a href="doctor_patient_details.html" class="btn-view">View Details</a>
+        </li>
+            <!-- Example Appointment 3 -->
+        <li class="appointment-item">
+            <div class="patient-details">
+                <strong>Amit Patel</strong>
+                <span class="subtext">Nov 10, 2025 @ 12:00 PM | Checkup</span>
+            </div>
+            <a href="doctor_patient_details.html" class="btn-view">View Details</a>
+        </li>
+            <!-- Example Appointment 4 (Future) -->
+        <li class="appointment-item">
+            <div class="patient-details">
+                <strong>Sunita Reddy</strong>
+                <span class="subtext">Nov 11, 2025 @ 9:00 AM | Consultation</span>
+            </div>
+            <a href="doctor_patient_details.html" class="btn-view">View Details</a>
+        </li>
+    </ul>
+
+</div>
+
+{% endblock %}

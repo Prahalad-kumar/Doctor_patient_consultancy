@@ -1,0 +1,38 @@
+{% extends 'patient/base_dashboard.html' %}
+{% block title %}Dashboard | HealthBook{% endblock %}
+{% block content %}
+<div style="background-color:var(--card-dark);padding:2rem;border-radius:12px;margin-bottom:2rem;text-align:center;">
+    <h1 style="margin:0;color:var(--primary-blue);">Welcome, {{ patient.full_name }} 👋</h1>
+    <p style="color:var(--text-muted);margin-top:0.5rem;">Your personalized health overview</p>
+</div>
+
+<div style="background-color:var(--primary-blue);border-radius:12px;padding:2rem;text-align:center;margin-bottom:2rem;">
+    <h2 style="color:white;margin-bottom:1rem;">Book your next appointment easily</h2>
+    <a href="{% url 'find_doctors' %}"
+       style="background-color:white;color:var(--primary-blue);text-decoration:none;
+              padding:12px 24px;border-radius:8px;font-weight:600;">
+        Find a Doctor
+    </a>
+</div>
+
+<div style="background-color:var(--card-dark);border-radius:12px;padding:2rem;">
+    <h3 style="color:var(--primary-blue);margin-bottom:1rem;">Upcoming Appointments</h3>
+    {% if appointments %}
+        {% for app in appointments %}
+            <div style="display:flex;justify-content:space-between;align-items:center;
+                        background-color:var(--bg-dark);padding:1rem;border-radius:8px;margin-bottom:1rem;">
+                <div>
+                    <strong>Dr. {{ app.doctor.fname }} {{ app.doctor.lname }}</strong>
+                    <div style="color:var(--text-muted);font-size:0.9rem;">
+                        {{ app.doctor.specialization }} | {{ app.date }} at {{ app.time }}
+                    </div>
+                </div>
+                <button style="background:none;border:1px solid var(--danger);color:var(--danger);
+                               padding:6px 12px;border-radius:6px;cursor:pointer;">Cancel</button>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p style="text-align:center;color:var(--text-muted);">No appointments yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'patient/base_dashboard.html' %}
+{% block title %}My Profile | HealthBook{% endblock %}
+{% block content %}
+<h1 style="color:var(--primary-blue);margin-bottom:1rem;">My Profile</h1>
+
+<form method="POST" action="{% url 'patient_update_profile' %}"
+      style="background-color:var(--card-dark);padding:2rem;border-radius:12px;margin-bottom:2rem;">
+    {% csrf_token %}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div>
+            <label>Full Name</label>
+            <input type="text" name="full_name" value="{{ patient.full_name }}"
+                   placeholder="Enter your full name"
+                   style="width:100%;padding:12px;border-radius:8px;background-color:var(--bg-dark);
+                          color:var(--text-light);border:1px solid var(--border-color);">
+        </div>
+        <div>
+            <label>Email</label>
+            <input type="email" name="email" value="{{ patient.email }}"
+                   placeholder="Your email address"
+                   style="width:100%;padding:12px;border-radius:8px;background-color:var(--bg-dark);
+                          color:var(--text-light);border:1px solid var(--border-color);">
+        </div>
+        <div>
+            <label>Phone</label>
+            <input type="tel" name="phone_number" value="{{ patient.phone_number }}"
+                   placeholder="Mobile number"
+                   style="width:100%;padding:12px;border-radius:8px;background-color:var(--bg-dark);
+                          color:var(--text-light);border:1px solid var(--border-color);">
+        </div>
+        <div>
+            <label>Date of Birth</label>
+            <input type="date" name="date_of_birth" value="{{ patient.date_of_birth|date:'Y-m-d' }}"
+                   style="width:100%;padding:12px;border-radius:8px;background-color:var(--bg-dark);
+                          color:var(--text-light);border:1px solid var(--border-color);">
+        </div>
+        <div style="grid-column:1 / -1;">
+            <label>Address</label>
+            <textarea name="address" placeholder="Enter your address"
+                      style="width:100%;padding:12px;border-radius:8px;background-color:var(--bg-dark);
+                             color:var(--text-light);border:1px solid var(--border-color);height:100px;">{{ patient.address }}</textarea>
+        </div>
+    </div>
+    <button type="submit"
+            style="margin-top:1rem;background-color:var(--success);color:white;padding:12px 24px;
+                   border:none;border-radius:8px;font-weight:bold;cursor:pointer;">
+        Save Profile
+    </button>
+</form>
+
+<form method="POST" action="{% url 'patient_change_password' %}"
+      style="background-color:var(--card-dark);padding:2rem;border-radius:12px;">
+    {% csrf_token %}
+    <h3 style="color:var(--primary-blue);margin-bottom:1rem;">Change Password</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div>
+            <label>Current Password</label>
+            <input type="password" name="current_password" placeholder="Enter current password"
+                   style="width:100%;padding:12px;border-radius:8px;background-color:var(--bg-dark);
+                          color:var(--text-light);border:1px solid var(--border-color);">
+        </div>
+        <div>
+            <label>New Password</label>
+            <input type="password" name="new_password" placeholder="Enter new password"
+                   style="width:100%;padding:12px;border-radius:8px;background-color:var(--bg-dark);
+                          color:var(--text-light);border:1px solid var(--border-color);">
+        </div>
+    </div>
+    <button type="submit"
+            style="margin-top:1.5rem;background-color:var(--primary-blue);color:white;padding:12px 24px;
+                   border:none;border-radius:8px;font-weight:bold;cursor:pointer;">
+        Update Password
+    </button>
+</form>
+{% endblock %}

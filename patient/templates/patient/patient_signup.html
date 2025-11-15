@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Sign Up - HealthBook</title>
+
+    <!-- 
+      =================
+      == CSS Section ==
+      =================
+    -->
+    <style>
+        :root {
+            --bg-dark: #1f202a;
+            --card-dark: #2c2d3c;
+            --primary-blue: #4a69ff;
+            --text-light: #f0f0f0;
+            --text-muted: #a0a0b0;
+            --border-color: #40405c;
+            --success: #28a745;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            margin: 0;
+            display: grid;
+            place-items: center;
+            padding: 2rem 0; /* Add padding for scroll */
+        }
+
+        /* --- Auth Card --- */
+        .auth-container {
+            width: 100%;
+            max-width: 600px;
+            padding: 2rem;
+        }
+        
+        .auth-card {
+            background-color: var(--card-dark);
+            border-radius: 10px;
+            padding: 2.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .auth-header h1 {
+            color: var(--primary-blue);
+            font-size: 2rem;
+            margin: 0 0 0.5rem 0;
+        }
+        .auth-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        /* --- Form --- */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        
+        .form-input[type="date"] { color-scheme: dark; }
+        
+        .form-textarea { min-height: 100px; resize: vertical; }
+        
+        /* Form Section Title */
+        .form-divider {
+            grid-column: 1 / -1;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .btn-submit {
+            width: 100%;
+            background-color: var(--success);
+            color: white;
+            padding: 14px;
+            font-weight: bold;
+            border-radius: 8px;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: transform 0.2s;
+        }
+        .btn-submit:hover { transform: translateY(-2px); }
+        
+        .auth-footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--text-muted);
+        }
+        .auth-footer a {
+            color: var(--primary-blue);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .auth-footer a:hover { text-decoration: underline; }
+
+    </style>
+</head>
+<body>
+
+    <!-- 
+      ==================
+      == HTML Section ==
+      ==================
+    -->
+
+    <main class="auth-container">
+        <div class="auth-card">
+            
+            <div class="auth-header">
+                <h1>Create Patient Account</h1>
+                <p>Join HealthBook Today</p>
+            </div>
+                        {% if messages %}
+                <div style="margin-bottom:1.5rem;">
+                    {% for message in messages %}
+                        <div style="
+                            background-color:{% if message.tags == 'success' %}#28a745{% else %}#dc3545{% endif %};
+                            color:white;
+                            padding:12px;
+                            border-radius:8px;
+                            text-align:center;
+                            font-weight:500;
+                            margin-bottom:8px;">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            
+            <!-- 
+              Note: Make sure your Django form tag has method="POST"
+            -->
+            <form id="signup-form" action="{% url "patient_signup" %}" method="POST">
+                {% csrf_token %}
+                
+                <div class="form-grid">
+                
+                    <!-- Section 1: Personal Information -->
+                    <h4 class="form-divider">Personal Information</h4>
+
+                    <div class="form-group full-width">
+                        <label for="full_name">Full Name</label>
+                        <input type="text" id="full_name" name="full_name" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gender">Gender</label>
+                        <select id="gender" name="gender" class="form-select" required>
+                            <option value="" disabled selected>Select gender...</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date_of_birth">Date of Birth</label>
+                        <input type="date" id="date_of_birth" name="date_of_birth" class="form-input" max="{{Today|date:'Y-m-d'}}"required>
+                    </div>
+
+                    <!-- Section 2: Contact Information -->
+                    <h4 class="form-divider">Contact Information</h4>
+
+                    <div class="form-group">
+                        <label for="phone_number">Phone Number</label>
+                        <input type="tel" id="phone_number" name="phone_number" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" class="form-input" required>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="address">Address (Optional)</label>
+                        <textarea id="address" name="address" class="form-textarea"></textarea>
+                    </div>
+
+                    <!-- Section 3: Account Information -->
+                    <h4 class="form-divider">Account Information</h4>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm Password</label>
+                        <input type="password" id="confirm-password" class="form-input" required>
+                    </div>
+
+                    <!-- Section 4: Medical Info (Optional) -->
+                    <h4 class="form-divider">Medical Info (Optional)</h4>
+
+                    <div class="form-group">
+                        <label for="blood_group">Blood Group</label>
+                        <select id="blood_group" name="blood_group" class="form-select">
+                            <option value="" selected>Select blood group...</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="medical_history">Medical History</label>
+                        <textarea id="medical_history" name="medical_history" class="form-textarea" placeholder="e.g., Allergies, chronic conditions..."></textarea>
+                    </div>
+
+                </div>
+                
+                <button type="submit" class="btn-submit">Create My Account</button>
+                
+            </form>
+        </div>
+        
+        <div class="auth-footer">
+            Already have a patient account? 
+            <a href='{% url "patient_login" %}'>Sign In</a>
+        </div>
+    </main>
+
+    <!-- 
+      ======================
+      == JavaScript Section ==
+      ======================
+    -->
+    <script>
+        document.getElementById('signup-form').addEventListener('submit', (e) => {
+            
+            const password = document.getElementById('password').value;
+            const confirmPass = document.getElementById('confirm-password').value;
+            
+            if (password !== confirmPass) {
+                alert('Passwords do not match. Please try again.');
+                return;
+            }
+
+            const fullName = document.getElementById('full_name').value;
+            
+
+            // In a real app, you would let the form submit
+            // to your Django backend.
+            // e.target.submit(); 
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Details</title>
+
+    <style>
+        :root {
+            --bg-dark: #1f202a;
+            --card-dark: #2c2d3c;
+            --primary-blue: #4a69ff;
+            --text-light: #f0f0f0;
+            --text-muted: #a0a0b0;
+            --border-color: #40405c;
+            --success: #28a745;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* --- Navigation Bar --- */
+        .navbar {
+            background-color: var(--card-dark);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+        .navbar-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-weight: 500;
+        }
+
+        /* --- Main Content --- */
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* --- Profile Header (Top Card) --- */
+        .profile-header {
+            display: flex;
+            flex-direction: column; /* Stack on small screens */
+            align-items: center;
+            background-color: var(--card-dark);
+            border-radius: 10px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+        
+        .header-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: var(--primary-blue);
+            margin-bottom: 1rem;
+            display: grid;
+            place-items: center;
+            font-size: 5rem;
+            font-weight: bold;
+            color: white;
+            /* In real app, use: background-image: url(...); */
+        }
+        
+        .header-info {
+            text-align: center;
+        }
+        
+        .header-info h1 {
+            margin: 0 0 0.5rem 0;
+            font-size: 2.2rem;
+        }
+        
+        .header-info .specialty {
+            font-size: 1.3rem;
+            color: var(--primary-blue);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .header-info .location {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+        
+        .btn-book {
+            background-color: var(--success);
+            color: white;
+            text-decoration: none;
+            padding: 14px 28px;
+            font-weight: bold;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn-book:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Responsive header for larger screens */
+        @media (min-width: 768px) {
+            .profile-header {
+                flex-direction: row;
+                text-align: left;
+            }
+            .header-avatar {
+                margin: 0 2rem 0 0;
+            }
+            .header-info {
+                text-align: left;
+            }
+            .header-cta {
+                margin-left: auto; /* Pushes button to the right */
+                align-self: center;
+            }
+        }
+
+        /* --- Detailed Info Cards --- */
+        .card {
+            background-color: var(--card-dark);
+            border-radius: 10px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+        
+        .card h3 {
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+            margin: 0 0 1.5rem 0;
+        }
+        
+        .card .bio-text {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text-muted);
+        }
+        
+        .info-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .info-list li {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1.25rem;
+            color: var(--text-muted);
+        }
+        
+        .info-list li strong {
+            display: block;
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        /* --- Final CTA Button --- */
+        .footer-cta {
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--card-dark);
+            border-radius: 10px;
+        }
+        .footer-cta h2 {
+            margin: 0 0 1.5rem 0;
+            font-size: 1.8rem;
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-brand">HealthBook</div>
+        <div class="navbar-links">
+            <a href="#">Dashboard</a>
+            <a href="#">Find a Doctor</a>
+            <a href="#">My Profile</a>
+            <a href="#" class="logout">Logout</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        
+        <header class="profile-header">
+            <div class="header-avatar">PK</div>
+            
+            <div class="header-info">
+                <h1>Dr. Prahlad Kumar</h1>
+                <p class="specialty">Cardiology</p>
+                <p class="location">Apollo Hospital, Bangalore</p>
+            </div>
+            
+            <div class="header-cta">
+                <a href="#" class="btn-book" id="book-btn-top">Book Appointment</a>
+            </div>
+        </header>
+
+        <div class="card">
+            <h3>About Dr. Kumar</h3>
+            <p class="bio-text">
+                Dr. Kumar is a leading cardiologist with over 15 years of experience. He specializes in preventative care and non-invasive procedures. He completed his M.D. at AIIMS, New Delhi, and his fellowship at the Cleveland Clinic.
+                <br><br>
+                He is dedicated to providing compassionate and comprehensive care to all his patients, focusing on long-term health and well-being.
+            </p>
+        </div>
+        
+        <div class="card">
+            <h3>Education & Certifications</h3>
+            <ul class="info-list">
+                <li>
+                    <strong>Fellowship, Cardiology</strong>
+                    Cleveland Clinic, Ohio, USA (2010 - 2012)
+                </li>
+                <li>
+                    <strong>M.D. (Doctor of Medicine)</strong>
+                    All India Institute of Medical Sciences (AIIMS), New Delhi (2004 - 2009)
+                </li>
+                <li>
+                    <strong>Certified, American Board of Internal Medicine</strong>
+                    Cardiovascular Disease
+                </li>
+            </ul>
+        </div>
+        
+        <div class="card">
+            <h3>Work Experience</h3>
+            <ul class="info-list">
+                <li>
+                    <strong>Senior Consultant Cardiologist</strong>
+                    Apollo Hospital, Bangalore (2015 - Present)
+                </li>
+                <li>
+                    <strong>Consultant Cardiologist</strong>
+                    Fortis Hospital, Bangalore (2012 - 2015)
+                </li>
+            </ul>
+        </div>
+        
+        <div class="card">
+            <h3>General Information</h3>
+            <ul class="info-list">
+                <li>
+                    <strong>Languages Spoken</strong>
+                    English, Hindi, Kannada
+                </li>
+                <li>
+                    <strong>Insurance Accepted</strong>
+                    Accepts most major insurance plans. Please call to confirm.
+                </li>
+            </ul>
+        </div>
+
+        <div class="footer-cta">
+            <h2>Ready to see Dr. Kumar?</h2>
+            <a href="#" class="btn-book" id="book-btn-bottom">Book Your Appointment Now</a>
+        </div>
+        
+    </main>
+
+    <script>
+        // This page is mostly static, so JS is minimal.
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // Get both booking buttons
+            const bookBtnTop = document.getElementById('book-btn-top');
+            const bookBtnBottom = document.getElementById('book-btn-bottom');
+
+            function handleBookingClick(e) {
+                e.preventDefault(); // Stop the link for this demo
+                
+                alert('This will take you to the booking calendar page for Dr. Kumar!');
+                
+                // In your Django template, you would change the `href`
+                // to link to the correct booking page, like:
+                // href="{% url 'doctor_booking_page' doctor.id %}"
+            }
+
+            bookBtnTop.addEventListener('click', handleBookingClick);
+            bookBtnBottom.addEventListener('click', handleBookingClick);
+            
+        });
+    </script>
+
+</body>
+</html>

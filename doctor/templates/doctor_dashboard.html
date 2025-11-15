@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+    .welcome-header {
+        /* Use card styles but with a gradient */
+        background: linear-gradient(90deg, var(--card-dark), #3a3b4e);
+        border: 1px solid var(--border-color);
+        padding: 2.5rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+    .welcome-header h1 {
+        margin: 0 0 0.5rem 0;
+        font-weight: 800;
+        font-size: 2.2rem;
+    }
+    .welcome-header p {
+        font-size: 1.2rem;
+        color: var(--text-muted);
+        margin: 0;
+    }
+    
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+    }
+    
+    /* Appointments List */
+    .appointment-list { list-style:none; padding-left:0; margin: 0; }
+    .appointment-item {
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center;
+        background-color: var(--bg-dark);
+        padding: 1.25rem; 
+        border-radius: 10px; 
+        margin-bottom: 1rem;
+        border: 1px solid var(--border-color);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .appointment-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    .appointment-item .patient-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-light);
+    }
+    .appointment-item .time {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-top: 0.25rem;
+    }
+    .btn-view {
+        background-color: var(--primary-blue);
+        padding: 8px 16px; 
+        color: white; 
+        border-radius: 8px;
+        text-decoration: none; 
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    .btn-view:hover {
+        background-color: #3a59ff;
+        transform: none;
+        box-shadow: none;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        background-color: var(--bg-dark);
+        border: 1px dashed var(--border-color);
+        border-radius: 10px;
+    }
+
+    /* Stats */
+    .stat-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    .stat-item {
+        background-color: var(--bg-dark);
+        padding: 1.5rem;
+        border-radius: 10px;
+        text-align: center;
+        border: 1px solid var(--border-color);
+    }
+    .stat-item .stat-value {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--accent-teal);
+        margin: 0;
+    }
+    .stat-item .stat-label {
+        font-size: 1rem;
+        color: var(--text-muted);
+        margin: 0.5rem 0 0 0;
+    }
+    
+    @media (max-width: 900px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+        .stat-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+    @media (max-width: 600px) {
+        .stat-grid {
+            grid-template-columns: 1fr;
+        }
+        .welcome-header {
+            padding: 1.5rem;
+        }
+        .welcome-header h1 {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- The 'card' class in 'welcome-header' will be animated by base.html JS -->
+<div class="welcome-header card">
+    <h1>Welcome, Dr. {{ doctor.fname }} {{ doctor.lname }}!</h1>
+    <p>Here is a quick overview of your day.</p>
+</div>
+
+<div class="dashboard-grid">
+    <!-- The 'card' class will be animated by base.html JS -->
+    <section class="card">
+        <h3>Today's Appointments</h3>
+        <ul class="appointment-list">
+            
+            <!-- Example Item: Loop this -->
+            <li class="appointment-item">
+                <div>
+                    <div class="patient-name">Rohan Sharma</div>
+                    <div class="time">10:30 AM – 11:00 AM</div>
+                </div>
+                <a class="btn-view" href="#">View Details</a>
+            </li>
+            
+        </ul>
+    </section>
+
+    <!-- The 'card' class will be animated by base.html JS -->
+    <aside class="card">
+        <h3>At a Glance</h3>
+        <div class="stat-grid">
+            <div class="stat-item">
+                <h2 class="stat-value">3</h2>
+                <p class="stat-label">Today's Appointments</p>
+            </div>
+            <div class="stat-item">
+                <h2 class="stat-value">12</h2>
+                <p class="stat-label">Appointments This Week</p>
+            </div>
+        </div>
+    </aside>
+</div>
+{% endblock %}
