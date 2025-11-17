@@ -4,121 +4,237 @@
 
 {% block extra_css %}
 <style>
-    .card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-    .card-header h3 {
-        margin: 0;
-        padding: 0;
-        border: none;
+    /* ---------------- */
+    /* Filter Bar */
+    /* ---------------- */
+    .filter-bar {
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:1.5rem;
+        gap: 1.5rem;
     }
     
-    /* Appointments List */
-    .appointment-list { list-style:none; padding-left:0; margin: 0; }
+    .filter-form {
+        display:flex;
+        gap:10px;
+        align-items:center;
+    }
+    
+    .btn-filter {
+        background:var(--primary-blue);
+        color:white;
+        transition: all 0.2s ease-in-out;
+    }
+    
+    .btn-filter:hover {
+        filter: brightness(1.15);
+    }
+
+    /* ---------------- */
+    /* Appointment List */
+    /* ---------------- */
+    .appointment-list { list-style:none;padding:0;margin:0; }
+
     .appointment-item {
-        display: flex; 
-        justify-content: space-between; 
-        align-items: center;
-        background-color: var(--bg-dark);
-        padding: 1.25rem; 
-        border-radius: 10px; 
-        margin-bottom: 1rem;
-        border: 1px solid var(--border-color);
-        transition: transform 0.3s, box-shadow 0.3s;
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-start;
+        gap:20px;
+        background: var(--bg-dark);
+        border:1px solid var(--border-color);
+        padding:1.5rem; /* Increased padding */
+        border-radius:12px;
+        margin-bottom:1rem;
+        transition: all 0.2s ease-in-out;
     }
+    
     .appointment-item:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        border-color: var(--accent-teal);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        transform: translateY(-2px);
     }
-    .appointment-item .patient-name {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--text-light);
+
+    .left-info {
+        flex:1;
+        display:flex;
+        flex-direction:column;
     }
-    .appointment-item .time {
-        font-size: 0.9rem;
-        color: var(--text-muted);
-        margin-top: 0.25rem;
+
+    .patient-name { font-size:1.1rem; font-weight:700; }
+
+    .patient-card {
+        color:var(--text-muted);
+        font-size:0.9rem;
+        margin-top:6px;
+        line-height:1.5; /* Improved line height */
     }
-    .btn-view {
-        background-color: var(--primary-blue);
-        padding: 8px 16px; 
-        color: white; 
-        border-radius: 8px;
-        text-decoration: none; 
-        font-weight: 600;
-        font-size: 0.9rem;
+
+    /* ---------------- */
+    /* Status Badge */
+    /* ---------------- */
+    .status-badge {
+        padding:6px 12px;
+        border-radius:8px;
+        font-weight:700;
+        font-size:0.85rem;
+        margin-top:12px; /* Increased margin */
+        display:inline-block;
     }
-    .btn-view:hover {
-        background-color: #3a59ff;
-        transform: none;
-        box-shadow: none;
+
+    .status-pending { background:#fff3cd;color:#856404 }
+    .status-approved { background:#d4edda;color:#155724 }
+    .status-cancelled { background:#f8d7da;color:#721c24 }
+    .status-completed { background:#cfe2ff;color:#084298 }
+
+    /* ---------------- */
+    /* Action Buttons */
+    /* ---------------- */
+    .right-actions {
+        display:flex;
+        flex-direction:column;
+        align-items:flex-end;
+        gap:8px;
+        flex-shrink: 0; /* Prevent shrinking */
     }
-    .empty-state {
+
+    .btn-approve, .btn-cancel, .btn-complete {
+        padding:6px 14px;
+        border-radius:10px;
+        font-weight:700;
+        text-decoration:none;
+        color:white !important;
         text-align: center;
-        padding: 3rem 1rem;
-        color: var(--text-muted);
-        font-size: 1.1rem;
-        background-color: var(--bg-dark);
-        border: 1px dashed var(--border-color);
-        border-radius: 10px;
+        transition: all 0.2s ease-in-out;
     }
+    
+    .btn-approve:hover, .btn-cancel:hover, .btn-complete:hover {
+        filter: brightness(1.15);
+        transform: scale(1.02);
+    }
+
+    .btn-approve { background:var(--accent-teal); color:var(--bg-dark) !Fimportant; }
+    .btn-cancel { background:#dc3545; }
+    .btn-complete { background:#0d6efd; }
+    
+    /* ---------------- */
+    /* Empty State */
+    /* ---------------- */
+    .empty-state {
+        text-align:center;
+        padding:3rem;
+        color:var(--text-muted);
+        background:var(--bg-dark);
+        border-radius:10px;
+        border:1px dashed var(--border-color);
+        font-size: 1.1rem;
+        font-style: italic;
+    }
+    
+    /* ---------------- */
+    /* Responsiveness */
+    /* ---------------- */
+    @media (max-width: 768px) {
+        .filter-bar {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 1rem;
+        }
+        
+        .filter-form {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 1rem;
+        }
+        
+        .filter-form label {
+            text-align: center;
+        }
+    }
+    
+    @media (max-width: 600px) {
+        .appointment-item {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.5rem;
+            padding: 1rem;
+        }
+        
+        .right-actions {
+            flex-direction: row;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .right-actions > a {
+            flex-grow: 1;
+        }
+    }
+    
 </style>
 {% endblock %}
 
 {% block content %}
-
 <h1 class="page-header">My Schedule</h1>
 
 <div class="card">
-    <div class="card-header">
+
+    <!-- FILTER -->
+    <div class="filter-bar">
         <h3>All Appointments</h3>
-        <form class="filter-form">
-            <label for="date-filter" style="align-self: center; color: var(--text-muted); font-weight: 500;">Filter by Date:</label>
-            <input type="date" id="date-filter" name="date" class="form-input">
+
+        <form method="GET" class="filter-form">
+            <label for="date-filter">Date:</label>
+            <input type="date" name="date" id="date-filter" value="{{ request.GET.date }}" class="form-input">
+            <button type="submit" class="btn btn-filter">Filter</button>
         </form>
     </div>
 
-    <ul class="appointment-list">
-        <!-- Example Appointment 1 -->
-        <li class="appointment-item">
-            <div class="patient-details">
-                <strong>Rohan Sharma</strong>
-                <span class="subtext">Nov 10, 2025 @ 10:30 AM | New Patient</span>
-            </div>
-            <a href="doctor_patient_details.html" class="btn-view">View Details</a>
-        </li>
-        <!-- Example Appointment 2 -->
-        <li class="appointment-item">
-            <div class="patient-details">
-                <strong>Priya Singh</strong>
-                <span class="subtext">Nov 10, 2025 @ 11:00 AM | Follow-up</span>
-            </div>
-            <a href="doctor_patient_details.html" class="btn-view">View Details</a>
-        </li>
-            <!-- Example Appointment 3 -->
-        <li class="appointment-item">
-            <div class="patient-details">
-                <strong>Amit Patel</strong>
-                <span class="subtext">Nov 10, 2025 @ 12:00 PM | Checkup</span>
-            </div>
-            <a href="doctor_patient_details.html" class="btn-view">View Details</a>
-        </li>
-            <!-- Example Appointment 4 (Future) -->
-        <li class="appointment-item">
-            <div class="patient-details">
-                <strong>Sunita Reddy</strong>
-                <span class="subtext">Nov 11, 2025 @ 9:00 AM | Consultation</span>
-            </div>
-            <a href="doctor_patient_details.html" class="btn-view">View Details</a>
-        </li>
-    </ul>
+
+    {% if appointments %}
+        <ul class="appointment-list">
+            {% for app in appointments %}
+            <li class="appointment-item">
+
+                <!-- LEFT SIDE -->
+                <div class="left-info">
+                    <div class="patient-name">{{ app.patient.full_name }}</div>
+                    <div class="patient-card">
+                        {{ app.patient.phone_number }} • {{ app.patient.email }}<br>
+                        {{ app.appointment_date|date:"M d, Y" }} • {{ app.appointment_time|time:"h:i A" }}
+                    </div>
+
+                    <span class="status-badge
+                        {% if app.status == 'Pending' %}status-pending
+                        {% elif app.status == 'Approved' %}status-approved
+                        {% elif app.status == 'Cancelled' %}status-cancelled
+                        {% else %}status-completed{% endif %}
+                    ">
+                        {{ app.status }}
+                    </span>
+                </div>
+
+                <!-- RIGHT SIDE -->
+                <div class="right-actions">
+                    {% if app.status == "Pending" %}
+                        <a href="{% url 'update_status' app.id 'Approved' %}" class="btn-approve">Approve</a>
+                    {% endif %}
+
+                    {% if app.status == "Pending" or app.status == "Approved" %}
+                        <a href="{% url 'update_status' app.id 'Cancelled' %}" class="btn-cancel">Cancel</a>
+                    {% endif %}
+
+                    {% if app.status == "Approved" %}
+                        <a href="{% url 'update_status' app.id 'Completed' %}" class="btn-complete">Complete</a>
+                    {% endif %}
+                </div>
+
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="empty-state">No appointments found for this date.</div>
+    {% endif %}
 
 </div>
-
 {% endblock %}

@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+{% block title %}All Appointments{% endblock %}
+{% block nav_schedule %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ---------------- */
+    /* Base Enhancements */
+    /* ---------------- */
+    .appointment-list { list-style:none;padding:0;margin:0; }
+
+    .appointment-item {
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-start;
+        background: var(--card-dark);
+        border:1px solid var(--border-color);
+        padding:1.5rem;
+        border-radius:12px;
+        margin-bottom:1rem;
+        gap:20px;
+        transition: all 0.2s ease-in-out;
+    }
+    
+    .appointment-item:hover {
+        border-color: var(--accent-teal);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        transform: translateY(-2px);
+    }
+
+    .left-info {
+        flex:1; /* Allow this section to grow */
+        display:flex;
+        flex-direction:column;
+    }
+
+    .patient-name { 
+        font-size:1.1rem; 
+        font-weight:700; 
+    }
+
+    .details {
+        font-size:0.9rem;
+        color:var(--text-muted);
+        margin-top:4px;
+        line-height:1.5;
+    }
+
+    /* ---------------- */
+    /* Status Badge */
+    /* ---------------- */
+    .status-badge {
+        padding:6px 12px;
+        border-radius:8px;
+        font-weight:700;
+        font-size:0.85rem;
+        display:inline-block;
+        margin-top:12px;
+    }
+
+    .status-pending { background:#fff3cd;color:#856404; }
+    .status-approved { background:#d4edda;color:#155724; }
+    .status-cancelled { background:#f8d7da;color:#721c24; }
+    .status-completed { background:#cfe2ff;color:#084298; }
+
+    /* ---------------- */
+    /* Action Buttons */
+    /* ---------------- */
+    .right-actions {
+        display:flex;
+        flex-direction:column;
+        gap:8px;
+        align-items:flex-end;
+        flex-shrink: 0; /* Prevent buttons from shrinking */
+    }
+
+    .btn-approve,
+    .btn-cancel,
+    .btn-complete {
+        padding:6px 14px;
+        border-radius:10px;
+        font-weight:700;
+        text-decoration:none;
+        color:white !important;
+        text-align: center;
+        transition: all 0.2s ease-in-out;
+    }
+    
+    .btn-approve:hover,
+    .btn-cancel:hover,
+    .btn-complete:hover {
+        filter: brightness(1.15);
+        transform: scale(1.02);
+    }
+
+    .btn-approve {
+        background:var(--accent-teal);
+        color:var(--bg-dark) !important;
+    }
+    .btn-cancel { background:#dc3545; }
+    .btn-complete { background:#0d6efd; }
+
+    /* ---------------- */
+    /* Empty State */
+    /* ---------------- */
+    .empty-state {
+        text-align:center;
+        padding:3rem;
+        color:var(--text-muted);
+        background:var(--bg-dark);
+        border-radius:10px;
+        border:1px dashed var(--border-color);
+        font-size: 1.1rem;
+        font-style: italic;
+    }
+    
+    /* ---------------- */
+    /* Responsiveness */
+    /* ---------------- */
+    @media (max-width: 600px) {
+        .appointment-item {
+            /* Stack info and buttons vertically on mobile */
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.5rem;
+            padding: 1rem;
+        }
+        
+        .right-actions {
+            /* Make buttons horizontal and full-width on mobile */
+            flex-direction: row;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .right-actions > a {
+            /* Make buttons grow to fill space */
+            flex-grow: 1;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="page-header">All Appointments</h1>
+
+<div class="card">
+    {% if appointments %}
+    <ul class="appointment-list">
+        {% for app in appointments %}
+        <li class="appointment-item">
+
+            <!-- LEFT SIDE: PATIENT INFO -->
+            <div class="left-info">
+                <div class="patient-name">{{ app.patient.full_name }}</div>
+
+                <div class="details">
+                    {{ app.patient.phone_number }} • {{ app.patient.email }}<br>
+                    {{ app.appointment_date|date:"M d, Y" }} • {{ app.appointment_time|time:"h:i A" }}
+                </div>
+
+                <span class="status-badge
+                    {% if app.status == 'Pending' %}status-pending
+                    {% elif app.status == 'Approved' %}status-approved
+                    {% elif app.status == 'Cancelled' %}status-cancelled
+                    {% else %}status-completed{% endif %}
+                ">
+                    {{ app.status }}
+                </span>
+            </div>
+
+            <!-- RIGHT SIDE: ACTION BUTTONS -->
+            <div class="right-actions">
+
+                {% if app.status == "Pending" %}
+                    <a href="{% url 'update_status' app.id 'Approved' %}" class="btn-approve">Approve</a>
+                {% endif %}
+
+                {% if app.status == "Pending" or app.status == "Approved" %}
+                    <a href="{% url 'update_status' app.id 'Cancelled' %}" class="btn-cancel">Cancel</a>
+                {% endif %}
+
+                {% if app.status == "Approved" %}
+                    <a href="{% url 'update_status' app.id 'Completed' %}" class="btn-complete">Complete</a>
+                {% endif %}
+
+            </div>
+
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div class="empty-state">No appointments found.</div>
+    {% endif %}
+</div>
+{% endblock %}

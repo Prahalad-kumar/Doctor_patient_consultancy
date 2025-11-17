@@ -1,32 +1,20 @@
-"""
-URL configuration for doctor_patient_consultancy project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
+# doctor_patient_consultancy/urls.py
 from django.contrib import admin
 from django.urls import path
 from patient import views as patient_views
 from doctor import views as doctor_views
-from .views import *
+from . import views as core_views
+from apponiment import views as appointment_views
+
 urlpatterns = [
-    #home
+    # home
     path('admin/', admin.site.urls),
-    path('', home, name='home'),
-    path('patient/', patient, name='patient'),
-    path('doctor/', doctor, name='doctor'),
-    path('about/', about, name='about'),
-    path('contact/', contact, name='contact'),
+    path('', core_views.home, name='home'),
+    path('patient/', core_views.patient, name='patient'),
+    path('doctor/', core_views.doctor, name='doctor'),
+    path('about/', core_views.about, name='about'),
+    path('contact/', core_views.contact, name='contact'),
+
     # Patient urls
     path('patient/signup/', patient_views.patient_signup, name='patient_signup'),
     path('patient/login/', patient_views.patient_login, name='patient_login'),
@@ -41,15 +29,18 @@ urlpatterns = [
 
     # Doctor urls
     path('doctor/create-account/', doctor_views.create_account, name='create_account'),
-
     path('doctor/login/', doctor_views.doctor_login, name='doctor_login'),
     path('doctor/logout/', doctor_views.doctor_logout, name='doctor_logout'),
-
     path('doctor/dashboard/', doctor_views.doctor_dashboard, name='doctor_dashboard'),
-
     path('doctor/profile/', doctor_views.doctor_profile, name='doctor_profile'),
     path('doctor/schedule/', doctor_views.doctor_schedule, name='doctor_schedule'),
-
     path('doctor/update-profile/', doctor_views.doctor_update_profile, name='doctor_update_profile'),
     path('doctor/change-password/', doctor_views.doctor_change_password, name='doctor_change_password'),
+
+    # Appointment urls
+    path('appointment/book/<int:doctor_id>/', appointment_views.book_appointment, name='book_appointment'),
+    path('appointment/patient-appointments/', appointment_views.patient_appointments, name='patient_appointments'),
+    path('appointment/doctor-appointments/', appointment_views.doctor_appointments, name='doctor_appointments'),
+    path('appointment/update-status/<int:id>/<str:status>/', appointment_views.update_status, name='update_status'),
+    path('appointment/cancel/<int:id>/', appointment_views.cancel_by_patient, name='cancel_by_patient'),
 ]

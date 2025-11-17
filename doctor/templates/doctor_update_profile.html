@@ -4,24 +4,8 @@
 
 {% block extra_css %}
 <style>
-    .form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0 1.5rem; /* Only column gap */
-    }
-    .form-group.full-width {
-        grid-column: 1 / -1;
-    }
-    .btn-submit {
-        margin-top: 1.5rem;
-    }
-    
-    @media (max-width: 768px) {
-        .form-grid {
-            grid-template-columns: 1fr;
-            gap: 0;
-        }
-    }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:0 1.5rem; }
+    .form-group.full-width { grid-column:1 / -1; }
 </style>
 {% endblock %}
 
@@ -44,9 +28,10 @@
                 <label for="email">Email</label>
                 <input id="email" name="email" class="form-input" value="{{ doctor.email }}" readonly>
             </div>
+
             <div class="form-group">
                 <label for="contact_number">Contact Number</label>
-                <input id="contact_number" name="contact_number" class="form-input" value="{{ doctor.contact_num }}">
+                <input id="contact_number" name="contact_number" class="form-input" value="{{ doctor.contact_number }}">
             </div>
             <div class="form-group">
                 <label for="specialty">Specialization</label>
@@ -56,19 +41,23 @@
                 <label for="experience_years">Years of Experience</label>
                 <input id="experience_years" name="experience_years" type="number" class="form-input" value="{{ doctor.years_of_experience }}">
             </div>
+
             <div class="form-group full-width">
                 <label for="qualification">Qualification</label>
                 <input id="qualification" name="qualification" class="form-input" value="{{ doctor.qualification }}">
             </div>
+
             <div class="form-group full-width">
                 <label for="office_address">Office Address</label>
                 <textarea id="office_address" name="office_address" class="form-textarea">{{ doctor.address }}</textarea>
             </div>
+
             <div class="form-group full-width">
                 <label for="bio">Biography</label>
                 <textarea id="bio" name="bio" class="form-textarea">{{ doctor.bio }}</textarea>
             </div>
         </div>
+
         <button type="submit" class="btn-submit btn-submit-green">Save Changes</button>
     </form>
 </div>

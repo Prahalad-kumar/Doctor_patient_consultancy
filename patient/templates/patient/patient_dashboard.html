@@ -1,38 +1,94 @@
 {% extends 'patient/base_dashboard.html' %}
 {% block title %}Dashboard | HealthBook{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+    .welcome-header { background: var(--card-dark); padding:2rem; border-radius:12px; text-align:center; margin-bottom:2rem; }
+    .appointment-list { list-style:none;padding:0;margin:0; }
+    .appointment-item { display:flex; justify-content:space-between; align-items:center; padding:1rem; border-radius:10px; margin-bottom:10px; background:var(--bg-dark); border:1px solid var(--border-color); }
+    .status-badge { padding:6px 10px; border-radius:8px; font-weight:700; font-size:0.85rem; }
+    .status-pending{ background:#fff3cd;color:#856404; }
+    .status-approved{ background:#d4edda;color:#155724; }
+    .status-cancelled{ background:#f8d7da;color:#721c24; }
+    .status-completed{ background:#cfe2ff;color:#084298; }
+    
+    .btn-book {
+        background: var(--primary-gradient);
+        color: var(--bg-dark);
+        padding: 10px 18px;
+        border-radius: 8px;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-block;
+        transition: 0.3s ease;
+    }
+    .btn-book:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .btn-cancel {
+        background:none; border:1px solid var(--error); color:var(--error);
+        padding:8px 14px; border-radius:8px; font-weight:600;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div style="background-color:var(--card-dark);padding:2rem;border-radius:12px;margin-bottom:2rem;text-align:center;">
-    <h1 style="margin:0;color:var(--primary-blue);">Welcome, {{ patient.full_name }} 👋</h1>
-    <p style="color:var(--text-muted);margin-top:0.5rem;">Your personalized health overview</p>
+
+<div class="welcome-header card">
+    <h1>Welcome, {{ patient.full_name }} 👋</h1>
+    <p>Manage your appointments easily.</p>
 </div>
 
-<div style="background-color:var(--primary-blue);border-radius:12px;padding:2rem;text-align:center;margin-bottom:2rem;">
-    <h2 style="color:white;margin-bottom:1rem;">Book your next appointment easily</h2>
-    <a href="{% url 'find_doctors' %}"
-       style="background-color:white;color:var(--primary-blue);text-decoration:none;
-              padding:12px 24px;border-radius:8px;font-weight:600;">
-        Find a Doctor
-    </a>
-</div>
+<div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="margin:0;">Upcoming Appointments</h3>
 
-<div style="background-color:var(--card-dark);border-radius:12px;padding:2rem;">
-    <h3 style="color:var(--primary-blue);margin-bottom:1rem;">Upcoming Appointments</h3>
-    {% if appointments %}
-        {% for app in appointments %}
-            <div style="display:flex;justify-content:space-between;align-items:center;
-                        background-color:var(--bg-dark);padding:1rem;border-radius:8px;margin-bottom:1rem;">
+        <!-- ⭐ NEW BOOK APPOINTMENT BUTTON -->
+        <a href="{% url 'find_doctors' %}" class="btn-book">
+            + Book Appointment
+        </a>
+    </div>
+
+    <ul class="appointment-list" style="margin-top:1rem;">
+        {% if appointments %}
+            {% for app in appointments %}
+            <li class="appointment-item">
                 <div>
-                    <strong>Dr. {{ app.doctor.fname }} {{ app.doctor.lname }}</strong>
-                    <div style="color:var(--text-muted);font-size:0.9rem;">
-                        {{ app.doctor.specialization }} | {{ app.date }} at {{ app.time }}
+                    <strong class="doctor-name">
+                        Dr. {{ app.doctor.fname }} {{ app.doctor.lname }}
+                    </strong>
+                    <div class="details">
+                        {{ app.doctor.specialization }} |
+                        {{ app.appointment_date|date:"M d, Y" }} at
+                        {{ app.appointment_time|time:"h:i A" }}
+                    </div>
+
+                    <div style="margin-top:5px;">
+                        <span class="status-badge 
+                            {% if app.status == 'Pending' %}status-pending
+                            {% elif app.status == 'Approved' %}status-approved
+                            {% elif app.status == 'Cancelled' %}status-cancelled
+                            {% else %}status-completed{% endif %}
+                        ">
+                            {{ app.status }}
+                        </span>
                     </div>
                 </div>
-                <button style="background:none;border:1px solid var(--danger);color:var(--danger);
-                               padding:6px 12px;border-radius:6px;cursor:pointer;">Cancel</button>
-            </div>
-        {% endfor %}
-    {% else %}
-        <p style="text-align:center;color:var(--text-muted);">No appointments yet.</p>
-    {% endif %}
+
+                {% if app.status != "Cancelled" and app.status != "Completed" %}
+                <a href="{% url 'update_status' app.id 'Cancelled' %}" class="btn-cancel">
+                    Cancel
+                </a>
+                {% endif %}
+            </li>
+            {% endfor %}
+        {% else %}
+            <li class="empty-state">No upcoming appointments yet.</li>
+        {% endif %}
+    </ul>
 </div>
+
 {% endblock %}

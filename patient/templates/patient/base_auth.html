@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}HealthBook | Auth{% endblock %}</title>
+    <title>{% block title %}HealthBook{% endblock %}</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -13,61 +18,194 @@
             --text-light: #f0f0f0;
             --text-muted: #a0a0b0;
             --border-color: #40405c;
+            --success: #28a745;
+            --error: #dc3545;
+            --accent-green: #28a745;
+            --accent-teal: #1de9b6;
+            --primary-gradient: linear-gradient(90deg, var(--accent-green), var(--accent-teal));
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-dark);
             color: var(--text-light);
             margin: 0;
             display: grid;
             place-items: center;
             min-height: 100vh;
+            padding: 2rem 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         .auth-container {
             width: 100%;
-            max-width: 420px;
-            padding: 2rem;
+            max-width: 550px; /* Wider for signup */
+            padding: 1.5rem;
+            box-sizing: border-box;
+        }
+        
+        /* --- MESSAGE BOXES --- */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            border: 1px solid transparent;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+        .alert-success {
+            background-color: #1a3a24;
+            color: #74e39a;
+            border-color: var(--success);
+        }
+        .alert-error {
+            background-color: #3b1e1e;
+            color: #f7a0a0;
+            border-color: var(--error);
         }
 
+        /* --- Auth Card & Form Styles --- */
         .auth-card {
             background-color: var(--card-dark);
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 2.5rem;
             border: 1px solid var(--border-color);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            animation: fadeIn 0.4s ease-in-out;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            /* Animation */
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.5s ease-out forwards;
         }
-
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-
-        a {
+        
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .auth-header h1 {
+            font-size: 2rem;
+            font-weight: 800;
             color: var(--primary-blue);
+            margin: 0 0 0.5rem 0;
+        }
+        .auth-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin: 0;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-size: 1rem;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(74, 105, 255, 0.3);
+        }
+        .form-input[type="date"] { color-scheme: dark; }
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .form-divider {
+            grid-column: 1 / -1;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--accent-teal);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .btn, .btn-submit {
+            text-decoration: none;
+            padding: 12px 24px;
+            font-weight: 600;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .btn:hover, .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .btn-submit {
+            background: var(--primary-blue);
+            color: white;
+            font-size: 1rem;
+        }
+        .btn-submit-green {
+            background: var(--primary-gradient);
+            color: var(--bg-dark);
+            font-size: 1rem;
+        }
+        
+        .auth-footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--text-muted);
+        }
+        .auth-footer a {
+            color: var(--accent-teal);
+            font-weight: 600;
             text-decoration: none;
         }
-
-        a:hover {
+        .auth-footer a:hover {
             text-decoration: underline;
         }
+        
+        @media (max-width: 600px) {
+            .auth-container {
+                padding: 1rem;
+            }
+            .auth-card {
+                padding: 1.5rem;
+            }
+        }
     </style>
+    {% block extra_css %}{% endblock %}
 </head>
-<body>
 
-    <main class="auth-container">
+<body>
+    <div class="auth-container">
+        
         {% if messages %}
             {% for message in messages %}
-                <div style="background:var(--card-dark);border-left:4px solid var(--primary-blue);padding:10px;margin-bottom:10px;border-radius:6px;">
+                <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %} is-visible">
                     {{ message }}
                 </div>
             {% endfor %}
         {% endif %}
 
         {% block content %}{% endblock %}
-    </main>
-
+    </div>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

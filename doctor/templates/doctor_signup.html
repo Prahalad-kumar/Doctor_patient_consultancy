@@ -3,21 +3,9 @@
 
 {% block extra_css %}
 <style>
-    .form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0 1.5rem; /* Only column gap */
-    }
-    .form-group.full-width {
-        grid-column: 1 / -1;
-    }
-    
-    @media (max-width: 600px) {
-        .form-grid {
-            grid-template-columns: 1fr;
-            gap: 0; /* No gap for single column */
-        }
-    }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.5rem; }
+    .form-group.full-width { grid-column: 1 / -1; }
+    @media (max-width:600px){ .form-grid{grid-template-columns:1fr} }
 </style>
 {% endblock %}
 
@@ -31,9 +19,8 @@
     <form method="POST" action="{% url 'create_account' %}">
         {% csrf_token %}
         <div class="form-grid">
-            
             <h4 class="form-divider">Login Details</h4>
-            
+
             <div class="form-group">
                 <label for="fname">First Name</label>
                 <input id="fname" name="fname" class="form-input" required>
@@ -46,6 +33,7 @@
                 <label for="email">Email</label>
                 <input id="email" name="email" class="form-input" type="email" required>
             </div>
+
             <div class="form-group">
                 <label for="password">Password</label>
                 <input id="password" name="password" class="form-input" type="password" required>
@@ -56,27 +44,30 @@
             </div>
 
             <h4 class="form-divider">Professional Details</h4>
-            
+
             <div class="form-group">
                 <label for="specialty">Specialty</label>
                 <input id="specialty" name="specialty" class="form-input" required>
             </div>
             <div class="form-group">
                 <label for="experience_years">Years of Experience</label>
-                <input id="experience_years" name="experience_years" class="form-input" type="number" required>
+                <input id="experience_years" name="experience_years" class="form-input" type="number" min="0" required>
             </div>
             <div class="form-group full-width">
                 <label for="qualification">Qualification</label>
                 <input id="qualification" name="qualification" class="form-input" required>
             </div>
+
             <div class="form-group full-width">
                 <label for="contact_number">Contact Number</label>
                 <input id="contact_number" name="contact_number" class="form-input" required>
             </div>
+
             <div class="form-group full-width">
                 <label for="office_address">Office Address</label>
                 <textarea id="office_address" name="office_address" class="form-textarea"></textarea>
             </div>
+
             <div class="form-group full-width">
                 <label for="bio">Bio</label>
                 <textarea id="bio" name="bio" class="form-textarea" placeholder="Tell patients about yourself..."></textarea>

@@ -1,0 +1,105 @@
+{% extends 'patient/base_dashboard.html' %}
+{% block title %}My Appointments{% endblock %}
+{% block nav_appointments %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+    .appointment-list { list-style:none;padding:0;margin:0; }
+
+    .appointment-item {
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        background: var(--card-dark);
+        border:1px solid var(--border-color);
+        padding:1.25rem;
+        border-radius:12px;
+        margin-bottom:1rem;
+    }
+
+    .doctor-name { font-size:1.1rem; font-weight:700; }
+
+    .details { color:var(--text-muted); font-size:0.9rem; margin-top:4px; }
+
+    .status-badge {
+        padding:6px 12px;
+        border-radius:8px;
+        font-weight:700;
+        font-size:0.85rem;
+        display:inline-block;
+        margin-top:6px;
+    }
+
+    .status-pending { background:#fff3cd; color:#856404; }
+    .status-approved { background:#d4edda; color:#155724; }
+    .status-cancelled { background:#f8d7da; color:#721c24; }
+    .status-completed { background:#cfe2ff; color:#084298; }
+
+    .btn-cancel {
+        border:1px solid var(--error);
+        color:var(--error);
+        padding:8px 14px;
+        border-radius:10px;
+        font-weight:600;
+        text-decoration:none;
+        transition:0.3s;
+    }
+
+    .btn-cancel:hover {
+        background:var(--error);
+        color:var(--text-light);
+    }
+
+    .empty-state {
+        padding:2rem;
+        text-align:center;
+        color:var(--text-muted);
+        border-radius:10px;
+        border:1px dashed var(--border-color);
+        background:var(--bg-dark);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="page-header">My Appointments</h1>
+
+<div class="card">
+    {% if appointments %}
+    <ul class="appointment-list">
+        {% for app in appointments %}
+        <li class="appointment-item">
+            <div>
+                <div class="doctor-name">
+                    Dr. {{ app.doctor.fname }} {{ app.doctor.lname }}
+                </div>
+                <div class="details">
+                    {{ app.doctor.specialization }} <br>
+                    {{ app.appointment_date|date:"M d, Y" }} at {{ app.appointment_time|time:"h:i A" }}
+                </div>
+
+                <span class="status-badge 
+                    {% if app.status == 'Pending' %}status-pending
+                    {% elif app.status == 'Approved' %}status-approved
+                    {% elif app.status == 'Cancelled' %}status-cancelled
+                    {% else %}status-completed{% endif %}
+                ">
+                    {{ app.status }}
+                </span>
+            </div>
+
+            {% if app.status != "Cancelled" and app.status != "Completed" %}
+            <a href="{% url 'cancel_by_patient' app.id %}" class="btn-cancel">
+                Cancel
+            </a>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div class="empty-state">
+        You have no appointments yet.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

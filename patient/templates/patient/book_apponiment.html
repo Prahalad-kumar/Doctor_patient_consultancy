@@ -1,37 +1,32 @@
 {% extends 'patient/base_dashboard.html' %}
-{% block title %}Book Appointment | HealthBook{% endblock %}
+{% block title %}Book Appointment{% endblock %}
+{% block nav_find_doctor %}active{% endblock %}
+
 {% block content %}
-<div style="background-color:var(--card-dark);border-radius:12px;padding:2rem;">
-    <h2 style="color:var(--primary-blue);margin-bottom:1.5rem;">Book Appointment</h2>
-    <p style="color:var(--text-muted);margin-bottom:2rem;">
-        Dr. {{ doctor.fname }} {{ doctor.lname }} – <strong>{{ doctor.specialization }}</strong>
-    </p>
+<div class="card" style="max-width:600px;margin:auto;">
+    <h1>Book Appointment</h1>
+    <p>Dr. {{ doctor.fname }} {{ doctor.lname }} — <strong>{{ doctor.specialization }}</strong></p>
 
     <form method="POST">
         {% csrf_token %}
-        <div style="margin-bottom:1.5rem;">
-            <label>Date</label>
-            <input type="date" name="date" min="{{ Today|date:'Y-m-d' }}"
-                   style="width:100%;padding:12px;border-radius:8px;border:1px solid var(--border-color);
-                          background-color:var(--bg-dark);color:var(--text-light);">
+
+        <div class="form-group">
+            <label>Select Date</label>
+            <input type="date" name="date" class="form-input" min="{{ today|date:'Y-m-d' }}" required>
         </div>
 
-        <div style="margin-bottom:1.5rem;">
-            <label>Available Time Slots</label>
-            <select name="time"
-                    style="width:100%;padding:12px;border-radius:8px;border:1px solid var(--border-color);
-                           background-color:var(--bg-dark);color:var(--text-light);">
-                {% for t in available_times %}
-                    <option value="{{ t }}">{{ t }}</option>
+        <div class="form-group">
+            <label>Select Time Slot</label>
+            <select name="time" class="form-select" required>
+                {% for t in slots %}
+                <option value="{{ t }}">{{ t }}</option>
+                {% empty %}
+                <option disabled>No slots available</option>
                 {% endfor %}
             </select>
         </div>
 
-        <button type="submit"
-                style="background-color:var(--success);color:white;padding:12px 24px;
-                       border:none;border-radius:8px;font-weight:bold;cursor:pointer;">
-            Confirm Appointment
-        </button>
+        <button class="btn-submit btn-submit-green" style="margin-top:1rem;">Confirm Appointment</button>
     </form>
 </div>
 {% endblock %}

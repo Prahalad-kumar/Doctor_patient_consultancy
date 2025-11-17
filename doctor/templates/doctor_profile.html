@@ -4,125 +4,30 @@
 
 {% block extra_css %}
 <style>
-    .profile-header {
-        display: flex;
-        /* Using card style, but you provided this file so keeping it */
-        background-color: var(--card-dark);
-        border-radius: 12px;
-        padding: 2.5rem;
-        border: 1px solid var(--border-color);
-        margin-bottom: 2rem;
-        align-items: center;
-    }
-    .avatar {
-        width: 130px;
-        height: 130px;
-        background: var(--primary-gradient);
-        border-radius: 50%;
-        display: grid;
-        place-items: center;
-        font-size: 4rem;
-        font-weight: 800;
-        color: var(--bg-dark);
-        margin-right: 2.5rem;
-        flex-shrink: 0;
-    }
-    .avatar-info h1 {
-        margin: 0;
-        font-size: 2.2rem;
-        font-weight: 800;
-    }
-    .avatar-info .specialty {
-        color: var(--accent-teal);
-        font-size: 1.3rem;
-        font-weight: 600;
-        margin-top: 0.5rem;
-    }
-    .avatar-info .location {
-        color: var(--text-muted);
-        margin-top: 1rem;
-        font-size: 1rem;
-    }
-    .profile-actions {
-        margin-left: auto;
-        align-self: flex-start;
-    }
-    .btn-edit {
-        background: var(--primary-gradient);
-        color: var(--bg-dark);
-        padding: 12px 20px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 600;
-    }
-    
-    /* Info Cards */
-    .info-list { 
-        list-style:none; 
-        padding-left:0; 
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
-    }
-    .info-list li {
-        margin-bottom: 1rem;
-        color: var(--text-muted);
-        font-size: 1.1rem;
-        line-height: 1.6;
-    }
-    .info-list li strong {
-        display: block;
-        color: var(--text-light);
-        font-size: 1rem;
-        font-weight: 600;
-        margin-bottom: 0.25rem;
-    }
-    
-    @media (max-width: 900px) {
-        .profile-header {
-            flex-direction: column;
-            text-align: center;
-        }
-        .avatar {
-            margin: 0 0 2rem 0;
-            width: 150px;
-            height: 150px;
-        }
-        .profile-actions {
-            margin-left: 0;
-            margin-top: 2rem;
-        }
-    }
-    
-    @media (max-width: 600px) {
-        .info-list {
-            grid-template-columns: 1fr;
-        }
-    }
+    .profile-header { display:flex; align-items:center; gap:2rem; margin-bottom:1.5rem; }
+    .avatar { width:130px;height:130px;border-radius:50%;display:grid;place-items:center;font-size:3rem;background:var(--primary-gradient); color:var(--bg-dark); }
+    .info-list { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; list-style:none;padding:0; }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- 'card' class added for animation -->
 <header class="profile-header card">
-    <div class="avatar">
-        {{ doctor.fname|first|upper }}{{ doctor.lname|first|upper }}
-    </div>
-    <div class="avatar-info">
+    <div class="avatar">{{ doctor.fname|first|upper }}{{ doctor.lname|first|upper }}</div>
+    <div>
         <h1>Dr. {{ doctor.fname }} {{ doctor.lname }}</h1>
         <div class="specialty">{{ doctor.specialization }}</div>
+        {% if doctor.address %}
         <div class="location">{{ doctor.address }}</div>
+        {% endif %}
     </div>
-    <div class="profile-actions">
+    <div style="margin-left:auto">
         <a href="{% url 'doctor_update_profile' %}" class="btn btn-edit">Edit Profile</a>
     </div>
 </header>
 
 <div class="card">
     <h3>About Me</h3>
-    <p style="color:var(--text-muted); line-height:1.7; font-size: 1.1rem;">
-        {{ doctor.bio }}
-    </p>
+    <p style="color:var(--text-muted); line-height:1.7; font-size:1.05rem;">{{ doctor.bio|default:"No bio provided yet." }}</p>
 </div>
 
 <div class="card">
@@ -130,11 +35,11 @@
     <ul class="info-list">
         <li>
             <strong>Qualification</strong>
-            {{ doctor.qualification }}
+            {{ doctor.qualification|default:"-" }}
         </li>
         <li>
             <strong>Experience</strong>
-            {{ doctor.years_of_experience }} Years
+            {{ doctor.years_of_experience|default:"0" }} Years
         </li>
         <li>
             <strong>Email</strong>
@@ -142,7 +47,7 @@
         </li>
         <li>
             <strong>Contact Number</strong>
-            {{ doctor.contact_num }}
+            {{ doctor.contact_number|default:"Not Provided" }}
         </li>
     </ul>
 </div>

@@ -4,167 +4,282 @@
 
 {% block extra_css %}
 <style>
-    .welcome-header {
-        /* Use card styles but with a gradient */
-        background: linear-gradient(90deg, var(--card-dark), #3a3b4e);
+    /* ---------------- */
+    /* Base Enhancements */
+    /* ---------------- */
+    
+    /* Assuming .card is in base.html, adding hover/shadows for a dynamic feel */
+    .card {
+        transition: all 0.2s ease-in-out;
+    }
+    .card:hover {
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        transform: translateY(-2px);
+    }
+
+    .welcome-header { 
+        background: linear-gradient(90deg, var(--card-dark), #3a3b4e); 
+        border-radius:12px; 
+        padding:2.5rem; 
+        margin-bottom:2rem; 
         border: 1px solid var(--border-color);
-        padding: 2.5rem;
-        border-radius: 12px;
-        margin-bottom: 2rem;
-    }
-    .welcome-header h1 {
-        margin: 0 0 0.5rem 0;
-        font-weight: 800;
-        font-size: 2.2rem;
-    }
-    .welcome-header p {
-        font-size: 1.2rem;
-        color: var(--text-muted);
-        margin: 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
     
-    .dashboard-grid {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 2rem;
+    /* ---------------- */
+    /* Layout Grid */
+    /* ---------------- */
+    .dashboard-grid { 
+        display:grid; 
+        grid-template-columns: 2fr 1fr; 
+        gap:2rem; 
     }
-    
-    /* Appointments List */
-    .appointment-list { list-style:none; padding-left:0; margin: 0; }
+
+    /* ---------------- */
+    /* Appointment List */
+    /* ---------------- */
+    .appointment-list { list-style:none; padding:0; margin:0; }
+
     .appointment-item {
-        display: flex; 
-        justify-content: space-between; 
-        align-items: center;
-        background-color: var(--bg-dark);
-        padding: 1.25rem; 
-        border-radius: 10px; 
-        margin-bottom: 1rem;
-        border: 1px solid var(--border-color);
-        transition: transform 0.3s, box-shadow 0.3s;
+        display:flex;
+        justify-content:space-between;
+        /* Align items to the top instead of center for better vertical rhythm */
+        align-items:flex-start; 
+        padding:1.5rem;
+        border-radius:10px;
+        border:1px solid var(--border-color);
+        background:var(--bg-dark);
+        margin-bottom:1rem;
+        gap: 1.5rem; /* Add gap for spacing */
+        transition: all 0.2s ease-in-out;
     }
+
     .appointment-item:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        border-color: var(--accent-teal);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        transform: translateY(-2px);
     }
-    .appointment-item .patient-name {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--text-light);
+
+    .appt-info {
+        /* This div will now grow and shrink */
+        flex-grow: 1;
     }
-    .appointment-item .time {
-        font-size: 0.9rem;
-        color: var(--text-muted);
-        margin-top: 0.25rem;
+
+    .appt-meta { 
+        color:var(--text-muted); 
+        font-size:0.95rem; 
+        margin-top: 4px;
+        line-height: 1.5;
     }
+
+    .status-badge {
+        padding:6px 10px;
+        border-radius:8px;
+        font-weight:700;
+        font-size:0.85rem;
+        display:inline-block;
+        margin-top:12px;
+    }
+
+    .status-pending{ background:#fff3cd; color:#856404; }
+    .status-approved{ background:#d4edda; color:#155724; }
+    .status-cancelled{ background:#f8d7da; color:#721c24; }
+    .status-completed{ background:#cfe2ff; color:#084298; }
+
+    /* ---------------- */
+    /* Buttons */
+    /* ---------------- */
+    .appt-actions {
+        display:flex;
+        flex-direction:column;
+        gap:8px;
+        align-items:flex-end;
+        /* Prevent buttons from shrinking */
+        flex-shrink: 0;
+    }
+
+    /* Base button style for transitions and hover */
+    .btn-view, .btn-cancel, .btn-complete {
+        padding:6px 12px;
+        border-radius:8px;
+        font-weight:700;
+        text-decoration:none;
+        display:inline-block;
+        text-align: center;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .btn-view:hover, .btn-cancel:hover, .btn-complete:hover {
+        filter: brightness(1.15);
+        transform: scale(1.02);
+    }
+
     .btn-view {
-        background-color: var(--primary-blue);
-        padding: 8px 16px; 
-        color: white; 
-        border-radius: 8px;
-        text-decoration: none; 
-        font-weight: 600;
-        font-size: 0.9rem;
+        background:var(--accent-teal);
+        color:var(--bg-dark);
     }
-    .btn-view:hover {
-        background-color: #3a59ff;
-        transform: none;
-        box-shadow: none;
+
+    .btn-cancel {
+        background:#dc3545;
+        color:white !important;
     }
+
+    .btn-complete {
+        background:#0d6efd;
+        color:white !important;
+    }
+
+    /* ---------------- */
+    /* Statistics */
+    /* ---------------- */
+    .stat-item {
+        padding:1.5rem;
+        border-radius:8px;
+        border:1px solid var(--border-color);
+        background:var(--bg-dark);
+        text-align:center;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .stat-item:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        transform: translateY(-2px);
+        border-color: var(--accent-teal);
+    }
+    
     .empty-state {
         text-align: center;
         padding: 3rem 1rem;
         color: var(--text-muted);
+        font-style: italic;
         font-size: 1.1rem;
-        background-color: var(--bg-dark);
-        border: 1px dashed var(--border-color);
-        border-radius: 10px;
     }
 
-    /* Stats */
-    .stat-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-    .stat-item {
-        background-color: var(--bg-dark);
-        padding: 1.5rem;
-        border-radius: 10px;
-        text-align: center;
-        border: 1px solid var(--border-color);
-    }
-    .stat-item .stat-value {
-        font-size: 3rem;
-        font-weight: 800;
-        color: var(--accent-teal);
-        margin: 0;
-    }
-    .stat-item .stat-label {
-        font-size: 1rem;
-        color: var(--text-muted);
-        margin: 0.5rem 0 0 0;
+    /* ---------------- */
+    /* Responsiveness */
+    /* ---------------- */
+    @media (max-width: 900px) {
+        .dashboard-grid { 
+            /* Stack grid items on smaller screens */
+            grid-template-columns: 1fr; 
+        }
     }
     
-    @media (max-width: 900px) {
-        .dashboard-grid {
-            grid-template-columns: 1fr;
-        }
-        .stat-grid {
-            grid-template-columns: 1fr 1fr;
-        }
-    }
     @media (max-width: 600px) {
-        .stat-grid {
-            grid-template-columns: 1fr;
+        .appointment-item {
+            /* Stack info and buttons vertically on mobile */
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.5rem;
+            padding: 1rem;
         }
+        
+        .appt-actions {
+            /* Make buttons horizontal and full-width on mobile */
+            flex-direction: row;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .appt-actions > a {
+            /* Make buttons grow to fill space */
+            flex-grow: 1;
+        }
+
         .welcome-header {
             padding: 1.5rem;
         }
-        .welcome-header h1 {
-            font-size: 1.8rem;
-        }
     }
+
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- The 'card' class in 'welcome-header' will be animated by base.html JS -->
+
+<!-- Header -->
 <div class="welcome-header card">
     <h1>Welcome, Dr. {{ doctor.fname }} {{ doctor.lname }}!</h1>
-    <p>Here is a quick overview of your day.</p>
+    <p>Here is a quick overview of your appointments.</p>
 </div>
 
 <div class="dashboard-grid">
-    <!-- The 'card' class will be animated by base.html JS -->
+
+    <!-- LEFT: TODAY'S APPOINTMENTS -->
     <section class="card">
         <h3>Today's Appointments</h3>
+
+        {% if todays_appointments %}
         <ul class="appointment-list">
-            
-            <!-- Example Item: Loop this -->
+            {% for app in todays_appointments %}
             <li class="appointment-item">
-                <div>
-                    <div class="patient-name">Rohan Sharma</div>
-                    <div class="time">10:30 AM – 11:00 AM</div>
+                
+                <!-- LEFT INFO -->
+                <!-- Added a wrapper div for better flex control -->
+                <div class="appt-info">
+                    <div style="font-weight:700; font-size: 1.1rem;">{{ app.patient.full_name }}</div>
+
+                    <div class="appt-meta">
+                        {{ app.patient.phone_number }} • {{ app.patient.email }} <br>
+                        {{ app.appointment_date|date:"M d, Y" }} • {{ app.appointment_time|time:"h:i A" }}
+                    </div>
+
+                    <span class="status-badge 
+                        {% if app.status == 'Pending' %}status-pending
+                        {% elif app.status == 'Approved' %}status-approved
+                        {% elif app.status == 'Cancelled' %}status-cancelled
+                        {% else %}status-completed{% endif %}
+                    ">
+                        {{ app.status }}
+                    </span>
                 </div>
-                <a class="btn-view" href="#">View Details</a>
+
+                <!-- RIGHT BUTTONS -->
+                <!-- ⭐ HTML Change: Added class="appt-actions" for better styling hook -->
+                <div class="appt-actions">
+                    {% if app.status == "Pending" %}
+                        <a href="{% url 'update_status' app.id 'Approved' %}" class="btn-view">Approve</a>
+                    {% endif %}
+
+                    {% if app.status == "Pending" or app.status == "Approved" %}
+                        <a href="{% url 'update_status' app.id 'Cancelled' %}" class="btn-cancel">Cancel</a>
+                    {% endif %}
+
+                    {% if app.status == "Approved" %}
+                        <a href="{% url 'update_status' app.id 'Completed' %}" class="btn-complete">Complete</a>
+                    {% endif %}
+                </div>
+
             </li>
-            
+            {% endfor %}
         </ul>
+        {% else %}
+        <div class="empty-state">No appointments for today.</div>
+        {% endif %}
     </section>
 
-    <!-- The 'card' class will be animated by base.html JS -->
-    <aside class="card">
-        <h3>At a Glance</h3>
-        <div class="stat-grid">
-            <div class="stat-item">
-                <h2 class="stat-value">3</h2>
-                <p class="stat-label">Today's Appointments</p>
-            </div>
-            <div class="stat-item">
-                <h2 class="stat-value">12</h2>
-                <p class="stat-label">Appointments This Week</p>
+    <!-- RIGHT: STATISTICS -->
+    <aside>
+        <div class="card" style="padding:1.5rem 1rem;">
+            <h3>At a Glance</h3>
+
+            <div style="display:grid;gap:1rem;">
+                <div class="stat-item">
+                    <div style="font-size:2rem;font-weight:800;color:var(--accent-teal)">
+                        {{ todays_count }}
+                    </div>
+                    <div style="color:var(--text-muted)">Today's Appointments</div>
+                </div>
+
+                <div class="stat-item">
+                    <div style="font-size:2rem;font-weight:800;color:var(--accent-teal)">
+                        {{ weekly_count }}
+                    </div>
+                    <div style="color:var(--text-muted)">This Week</div>
+                </div>
             </div>
         </div>
     </aside>
+
 </div>
+
 {% endblock %}
