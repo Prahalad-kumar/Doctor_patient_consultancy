@@ -77,10 +77,19 @@ WSGI_APPLICATION = 'doctor_patient_consultancy.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': 'LkhopoZHnSwsbViduiNxJnYkhbQPhLXS',
+        'HOST': 'gondola.proxy.rlwy.net',
+        'PORT': '20816',
+        'OPTIONS': {
+            'sslmode': 'require',
+        }
     }
 }
+
+
 
 
 # Password validation
