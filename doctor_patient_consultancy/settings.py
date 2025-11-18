@@ -138,3 +138,10 @@ LOGIN_URL = '/patient/login/'
 LOGIN_REDIRECT_URL = '/patient/dashboard/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+RAILWAY_DOMAIN = os.getenv("RAILWAY_PUBLIC_DOMAIN")
+
+CSRF_TRUSTED_ORIGINS = [
+    f"https://{RAILWAY_DOMAIN}",
+] if RAILWAY_DOMAIN else []
