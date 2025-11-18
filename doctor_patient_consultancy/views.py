@@ -2,7 +2,7 @@
 from django.shortcuts import render, redirect
 
 def home(request):
-    return render(request, 'home.html')
+    return render(request, 'index.html')
 
 def patient(request):
     return redirect('patient_login')
