@@ -4,472 +4,520 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Us - HealthBook</title>
-    <!-- Adding a modern font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-dark: #1f202a;
-            --card-dark: #2c2d3c;
-            --primary-blue: #4a69ff;
-            --text-light: #f0f0f0;
-            --text-muted: #a0a0b0;
-            --border-color: #40405c;
-            /* New accent colors */
-            --accent-green: #28a745;
-            --accent-teal: #1de9b6;
-            --primary-gradient: linear-gradient(90deg, var(--accent-green), var(--accent-teal));
+            /* Consistent Theme Colors from Home Page */
+            --bg-dark: #0f1014;
+            --bg-secondary: #181920;
+            --card-bg: rgba(30, 32, 45, 0.7);
+            --primary-blue: #3b82f6;
+            --primary-glow: #3b82f680;
+            --text-light: #ffffff;
+            --text-muted: #9ca3af;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --accent-green: #10b981;
+            --accent-teal: #2dd4bf;
+            --gradient-main: linear-gradient(135deg, #3b82f6 0%, #2dd4bf 100%);
+            --nav-height: 80px;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
+        * { box-sizing: border-box; }
+        
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: var(--bg-dark);
             color: var(--text-light);
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Background Glow Orbs (Same as Home) --- */
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.4;
+            animation: float-orb 10s infinite alternate ease-in-out;
+        }
+        .orb-1 {
+            top: -5%; left: -10%;
+            width: 500px; height: 500px;
+            background: var(--primary-blue);
+        }
+        .orb-2 {
+            bottom: 10%; right: -5%;
+            width: 450px; height: 450px;
+            background: var(--accent-teal);
+            animation-delay: -5s;
+        }
+        .orb-3 {
+            top: 40%; left: 50%;
+            width: 300px; height: 300px;
+            background: #8b5cf6; /* Purple accent */
+            opacity: 0.25;
+            animation-delay: -2s;
+            transform: translateX(-50%);
+        }
+
+        @keyframes float-orb {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(30px, 50px); }
         }
 
         /* --- Navigation Bar --- */
         .navbar {
-            background-color: #2c2d3cb0; /* Slightly transparent */
-            backdrop-filter: blur(10px);
-            padding: 1rem 2.5rem;
+            background: rgba(15, 16, 20, 0.85);
+            backdrop-filter: blur(12px);
+            height: var(--nav-height);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 0 2rem;
             border-bottom: 1px solid var(--border-color);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
         }
+
         .navbar-brand {
-            font-size: 1.8rem;
+            font-size: 1.75rem;
             font-weight: 800;
-            color: var(--primary-blue);
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             text-decoration: none;
+            letter-spacing: -0.5px;
         }
-        .nav-menu {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-        .nav-links a {
+
+        .nav-menu { display: flex; align-items: center; gap: 2rem; }
+        .nav-links { display: flex; align-items: center; gap: 1.5rem; }
+
+        .nav-item {
             color: var(--text-muted); text-decoration: none; font-weight: 500;
-            padding: 8px 16px; border-radius: 8px; transition: all 0.3s ease;
+            font-size: 0.95rem; transition: color 0.3s ease; position: relative;
         }
-        .nav-links a:hover, .nav-links a.active {
-            color: var(--text-light); background-color: var(--bg-dark);
+        .nav-item:hover, .nav-item.active { color: var(--text-light); }
+        
+        .btn-login {
+            background: var(--gradient-main);
+            color: white; padding: 0.6rem 1.5rem;
+            border-radius: 50px; font-weight: 600; text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .nav-links a.btn-login {
-            background-color: var(--primary-blue); color: white; font-weight: 600;
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
+        
+        .btn-patient-login {
+            border: 1px solid var(--border-color); padding: 0.6rem 1.5rem;
+            border-radius: 50px; color: var(--text-light); text-decoration: none;
+            font-weight: 500; transition: all 0.2s ease;
         }
-        .nav-links a.btn-login:hover {
-            background-color: #3a59ff; color: white;
-        }
+        .btn-patient-login:hover { border-color: var(--primary-blue); background: rgba(59, 130, 246, 0.1); }
 
-        /* Mobile Hamburger Menu */
-        .mobile-nav-toggle {
-            display: none; background: none; border: none; cursor: pointer;
-        }
-        .mobile-nav-toggle .hamburger-icon {
-            stroke: var(--text-light); width: 28px; height: 28px;
-        }
+        .mobile-nav-toggle { display: none; background: none; border: none; cursor: pointer; }
+        .hamburger-line { width: 25px; height: 2px; background-color: #fff; display: block; margin: 6px 0; }
 
-        /* --- Page Header --- */
-        .page-header {
+        /* --- Main Layout (Single Column Centered) --- */
+        .main-container {
+            flex: 1;
+            max-width: 800px;
+            margin: 0 auto;
             padding: 4rem 2rem;
-            text-align: center;
-            background: linear-gradient(rgba(31, 32, 42, 0.8), rgba(31, 32, 42, 0.8)), 
-                        radial-gradient(circle at top right, var(--primary-blue), transparent 60%);
-            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; 
+            gap: 3rem;
+            width: 100%;
         }
-        .page-header h1 {
+
+        /* Visual Header */
+        .visual-header {
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .visual-header h1 {
             font-size: 3.5rem;
             font-weight: 800;
-            color: var(--text-light);
             margin: 0 0 1rem 0;
+            line-height: 1.1;
         }
-        .page-header p {
-            font-size: 1.2rem;
+        
+        .visual-header h1 span {
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .visual-header p {
             color: var(--text-muted);
+            font-size: 1.15rem;
+            line-height: 1.6;
             max-width: 600px;
             margin: 0 auto;
         }
 
-        /* --- Contact Layout --- */
-        .contact-layout {
-            padding: 4rem 2rem;
-            max-width: 1000px;
-            margin: 0 auto;
+        /* The Form Card */
+        .contact-card {
+            width: 100%;
+            background: rgba(20, 22, 30, 0.75); /* Darker glass */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            position: relative;
+            overflow: hidden;
         }
 
-        /* --- Contact Form Card --- */
-        .contact-form-card {
-            background-color: var(--card-dark);
-            border-radius: 10px;
-            padding: 2.5rem;
-            border: 1px solid var(--border-color);
-            margin-bottom: 3rem;
-            
-            /* Animation */
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
-        }
-        .contact-form-card.is-visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .contact-form-card h2 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-light);
-            margin: 0 0 2rem 0;
-            text-align: center;
+        /* Gradient Top Border */
+        .contact-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--gradient-main);
         }
 
-        .form-group {
-            margin-bottom: 1.5rem;
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
         }
-        .form-group label {
+
+        .form-group { margin-bottom: 1.5rem; width: 100%; }
+        .form-group.full-width { grid-column: span 2; }
+        
+        .form-label {
             display: block;
-            margin-bottom: 0.5rem;
-            color: var(--text-muted);
+            margin-bottom: 0.6rem;
+            color: #e2e8f0;
+            font-size: 0.9rem;
             font-weight: 500;
         }
-        .form-input, .form-textarea {
+
+        .form-input {
             width: 100%;
-            padding: 14px;
-            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
             border: 1px solid var(--border-color);
-            background-color: var(--bg-dark);
+            border-radius: 12px;
+            padding: 16px;
             color: var(--text-light);
-            font-size: 1rem;
-            box-sizing: border-box;
             font-family: 'Inter', sans-serif;
-        }
-        .form-textarea {
-            min-height: 150px;
-            resize: vertical;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            min-width: 0; 
         }
 
-        /* Button */
-        .btn {
-            text-decoration: none;
-            padding: 14px 28px;
-            font-weight: 600;
-            border-radius: 8px;
-            font-size: 1.1rem;
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+        }
+
+        .form-textarea { min-height: 140px; resize: vertical; }
+
+        .btn-submit {
+            grid-column: span 2;
+            width: 100%;
+            background: var(--gradient-main);
+            color: white;
             border: none;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
         }
-        .btn-primary {
-            background: var(--primary-gradient);
-            color: var(--bg-dark);
+
+        /* Info Cards Row */
+        .info-cards-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
             width: 100%;
         }
 
-        /* --- Contact Info Grid --- */
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-bottom: 4rem;
-        }
         .info-card {
-            background-color: var(--card-dark);
-            border-radius: 10px;
-            padding: 2rem;
-            text-align: center;
+            background: rgba(30, 32, 45, 0.6);
             border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            backdrop-filter: blur(10px);
             transition: transform 0.3s ease, border-color 0.3s ease;
-            
-            /* Animation */
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+            text-decoration: none;
         }
-        .info-card.is-visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
+
         .info-card:hover {
             transform: translateY(-5px);
             border-color: var(--accent-teal);
+            background: rgba(30, 32, 45, 0.9);
         }
-        .info-icon {
-            width: 48px;
-            height: 48px;
-            stroke: var(--accent-teal);
-            margin-bottom: 1.5rem;
+
+        .icon-box {
+            width: 48px; height: 48px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
         }
-        .info-card h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-light);
-            margin: 0 0 0.5rem 0;
-        }
-        .info-card p, .info-card a {
-            font-size: 1rem;
-            color: var(--text-muted);
-            line-height: 1.6;
-            margin: 0;
-            text-decoration: none;
-            word-wrap: break-word; /* For long emails */
-        }
-        .info-card a:hover {
-            color: var(--accent-teal);
-        }
+
+        .icon-phone { background: rgba(59, 130, 246, 0.15); color: var(--primary-blue); }
+        .icon-mail { background: rgba(45, 212, 191, 0.15); color: var(--accent-teal); }
+        .icon-loc { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
+
+        .info-content h3 { margin: 0 0 0.3rem 0; font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .info-content p { margin: 0; font-size: 1rem; font-weight: 600; color: var(--text-light); }
 
         /* --- Map Section --- */
-        .map-section {
-            text-align: center;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
-        }
-        .map-section.is-visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .map-section h2 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-light);
-            margin: 0 0 2rem 0;
-        }
-        .map-placeholder {
+        .map-container {
             width: 100%;
-            height: 400px;
-            background-color: var(--card-dark);
+            height: 350px;
+            border-radius: 24px;
+            overflow: hidden;
             border: 1px solid var(--border-color);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            color: var(--text-muted);
-            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M-10 10l20 20M70 70l20 20M10 70l20 20M70 10l20 20' stroke='%2340405c' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E");
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5);
+            /* Dark mode filter */
+            filter: grayscale(100%) invert(90%) hue-rotate(180deg);
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+        
+        .map-container:hover {
+            filter: grayscale(0%) invert(0%);
+            border-color: var(--primary-blue);
         }
 
-        /* --- Footer --- */
         .footer {
+            margin-top: auto;
+            padding: 2rem;
             text-align: center;
-            padding: 3rem 2rem;
-            background-color: var(--bg-dark);
-            color: var(--text-muted);
             border-top: 1px solid var(--border-color);
+            background: var(--bg-dark);
+            color: var(--text-muted);
+            font-size: 0.9rem;
         }
 
-        /* --- Responsive Styles --- */
+        /* --- Responsive --- */
+        @media (max-width: 900px) {
+            .form-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .form-group.full-width { grid-column: span 1; }
+            .btn-submit { grid-column: span 1; }
+            .info-cards-row { grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+        }
+
         @media (max-width: 768px) {
-            .navbar { padding: 1rem 1.5rem; }
+            .mobile-nav-toggle { display: block; }
             .nav-menu {
+                position: fixed; top: 80px; left: 0; width: 100%;
+                background: var(--bg-dark); flex-direction: column; padding: 2rem;
+                border-bottom: 1px solid var(--border-color);
                 display: none;
-                position: absolute;
-                top: 67px; /* Height of navbar */
-                left: 0;
-                right: 0;
-                width: 100%;
-                background-color: var(--card-dark);
-                flex-direction: column;
-                align-items: stretch;
-                padding: 1rem 0;
-                gap: 0;
-                border-top: 1px solid var(--border-color);
+                z-index: 999;
             }
-            .nav-menu.is-open {
-                display: flex;
+            .nav-menu.active { display: flex; }
+            .nav-links { flex-direction: column; width: 100%; }
+            .navbar-buttons { width: 100%; display: flex; flex-direction: column; gap: 1rem; }
+            .btn-login, .btn-patient-login { width: 100%; text-align: center; }
+
+            /* Mobile Layout Fixes */
+            .main-container {
+                padding: 2rem 1.5rem;
+                gap: 2rem;
+                justify-content: flex-start; 
+                height: auto; 
             }
-            .nav-links a {
-                padding: 1rem 2rem;
-                border-radius: 0;
-                text-align: center;
-            }
-            .nav-links a:hover {
-                background-color: var(--bg-dark);
-            }
-            .mobile-nav-toggle {
-                display: block;
+
+            .visual-header h1 { font-size: 2.5rem; }
+            
+            .contact-card { 
+                padding: 1.5rem; 
             }
             
-            .contact-layout {
-                padding: 3rem 1rem;
+            .info-cards-row { 
+                grid-template-columns: 1fr; 
+                gap: 1rem; 
             }
-            .page-header h1 {
-                font-size: 2.5rem;
+            
+            .info-card { 
+                flex-direction: row; 
+                align-items: center; 
+                text-align: left; 
+                padding: 1rem;
             }
-            .contact-form-card {
-                padding: 1.5rem;
+            
+            .icon-box { 
+                margin-bottom: 0; 
+                margin-right: 1rem; 
             }
-            .info-card {
-                padding: 1.5rem;
+            
+            .map-container {
+                height: 250px;
             }
         }
     </style>
 </head>
 <body>
 
+    <!-- Ambient Glows -->
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="glow-orb orb-3"></div>
+
     <nav class="navbar">
         <a href="{% url "home" %}" class="navbar-brand">HealthBook</a>
         
-        <!-- Navigation Menu -->
         <div class="nav-menu" id="nav-menu">
             <div class="nav-links">
-                <a href="{% url "home" %}" class="active">Home</a>
-                <a href="{% url "about" %}">About Us</a>
-                <a href='{% url "patient_login" %}' class="btn-secondary">Patient Login</a>
+                <a href="{% url "about" %}" class="nav-item">About Us</a>
+                <a href="{% url "contact" %}" class="nav-item active">Contact</a>
+            </div>
+            <div class="navbar-buttons">
+                <a href='{% url "patient_login" %}' class="btn-patient-login">Patient Login</a>
                 <a href='{% url "doctor_login" %}' class="btn-login">Doctor Login</a>
             </div>
         </div>
         
-        <!-- Hamburger Button -->
-        <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Open navigation menu">
-            <svg class="hamburger-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7" />
-            </svg>
+        <button class="mobile-nav-toggle" id="mobile-nav-toggle">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
         </button>
     </nav>
 
-    <main>
-        <header class="page-header">
-            <h1>Get In Touch</h1>
-            <p>We'd love to hear from you. Fill out the form below or contact the developer directly.</p>
-        </header>
+    <main class="main-container">
+        
+        <div class="visual-header">
+            <h1>Let's Start a <br><span>Conversation</span></h1>
+            <p>Have questions about HealthBook? We're here to help. Reach out to us directly or fill out the form below.</p>
+        </div>
 
-        <section class="contact-layout">
-            
-            <!-- Contact Form Card -->
-            <div class="contact-form-card" id="contact-form-card">
-                <h2>Send Us a Message</h2>
-                <form id="contact-form">
-                    <div class="form-group">
-                        <label for="name">Your Name</label>
-                        <input type="text" id="name" name="name" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Your Email</label>
-                        <input type="email" id="email" name="email" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="subject">Subject</label>
-                        <input type="text" id="subject" name="subject" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="message">Message</label>
-                        <textarea id="message" name="message" class="form-textarea" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Send Message</button>
-                </form>
-            </div>
+        <!-- The Form Card -->
+        <div class="contact-card">
+            <form id="contact-form" class="form-grid">
+                <!-- Form Group 1 -->
+                <div class="form-group">
+                    <label class="form-label">First Name</label>
+                    <input type="text" class="form-input" placeholder="e.g. Sarah" required>
+                </div>
+                <!-- Form Group 2 -->
+                <div class="form-group">
+                    <label class="form-label">Last Name</label>
+                    <input type="text" class="form-input" placeholder="e.g. Connor" required>
+                </div>
+                <!-- Form Group 3 (Full Width) -->
+                <div class="form-group full-width">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-input" placeholder="sarah@example.com" required>
+                </div>
+                <!-- Form Group 4 (Full Width) -->
+                <div class="form-group full-width">
+                    <label class="form-label">Message</label>
+                    <textarea class="form-input form-textarea" placeholder="How can we help you?" required></textarea>
+                </div>
+                <button type="submit" class="btn-submit">Send Message</button>
+            </form>
+        </div>
 
-            <!-- Contact Info Grid (Using your resume data) -->
-            <div class="info-grid">
-                <div class="info-card" id="info-card-1">
-                    <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-                    </svg>
-                    <h3>Location</h3>
+        <!-- Info Cards Grid -->
+        <div class="info-cards-row">
+            <a href="tel:+917255926881" class="info-card">
+                <div class="icon-box icon-phone">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                </div>
+                <div class="info-content">
+                    <h3>Call Us</h3>
+                    <p>+91 7255926881</p>
+                </div>
+            </a>
+
+            <a href="mailto:Prahaladkr1@gmail.com" class="info-card">
+                <div class="icon-box icon-mail">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                </div>
+                <div class="info-content">
+                    <h3>Email Us</h3>
+                    <p>Prahaladkr1@gmail.com</p>
+                </div>
+            </a>
+
+            <div class="info-card">
+                <div class="icon-box icon-loc">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                </div>
+                <div class="info-content">
+                    <h3>Visit HQ</h3>
                     <p>Basavanagudi, Bangalore</p>
                 </div>
-                <div class="info-card" id="info-card-2">
-                    <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m21.75 0l-5.625 5.625M3 6.75l5.625 5.625m0 0L10.5 14.25m-1.875-1.875L12 14.25m2.625-2.625L12 14.25m0 0L10.5 15.75m1.5-1.5L12 14.25m0 0L13.5 15.75m-1.5-1.5L12 14.25" />
-                    </svg>
-                    <h3>Developer Email</h3>
-                    <p><a href="mailto:Prahaladkr1@gmail.com">Prahaladkr1@gmail.com</a></p>
-                </div>
-                <div class="info-card" id="info-card-3">
-                    <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.827-1.45-5.15-3.772-6.6-6.6l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
-                    </svg>
-                    <h3>Developer Phone</h3>
-                    <p><a href="tel:+917255926881">+91 7255926881</a></p>
-                </div>
             </div>
+        </div>
 
-            <!-- Map Section -->
-            <div class="map-section" id="map-section">
-                <h2>Find Us Here</h2>
-                <div class="map-placeholder">
-                    <iframe 
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3890.729996961592!2d77.56059607503206!3d12.941701587362432!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae15c9175f4d19%3A0xd1df7c9e65df19c!2sBasavanagudi%2C%20Bengaluru%2C%20Karnataka!5e0!3m2!1sen!2sin!4v1700000000000" 
-                        width="80%" 
-                        height="300" 
-                        style="border:0;" 
-                        allowfullscreen 
-                        loading="lazy">
-                    </iframe>
-                </div>
-            </div>
+        <!-- Map Section -->
+        <div class="map-container">
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3890.729996961592!2d77.56059607503206!3d12.941701587362432!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae15c9175f4d19%3A0xd1df7c9e65df19c!2sBasavanagudi%2C%20Bengaluru%2C%20Karnataka!5e0!3m2!1sen!2sin!4v1700000000000" 
+                width="100%" 
+                height="100%" 
+                style="border:0;" 
+                allowfullscreen 
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+        </div>
 
-        </section>
     </main>
 
     <footer class="footer">
-        <p>&copy; 2025 HealthBook. Created by Prahalad Kumar. All rights reserved.</p>
+        <p>&copy; 2025 HealthBook. Created by Prahalad Kumar.</p>
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- 1. Mobile Navigation Toggle ---
-            const navToggle = document.getElementById('mobile-nav-toggle');
-            const navMenu = document.getElementById('nav-menu');
-            if (navToggle) {
-                navToggle.addEventListener('click', () => {
-                    navMenu.classList.toggle('is-open');
-                });
-            }
+        // Mobile Menu Toggle
+        const navToggle = document.getElementById('mobile-nav-toggle');
+        const navMenu = document.getElementById('nav-menu');
+        
+        navToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
 
-            // --- 2. Dynamic Fade-in Animations ---
-            const elementsToAnimate = [
-                document.getElementById('contact-form-card'),
-                document.getElementById('info-card-1'),
-                document.getElementById('info-card-2'),
-                document.getElementById('info-card-3'),
-                document.getElementById('map-section')
-            ];
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach((entry, i) => {
-                    if (entry.isIntersecting) {
-                        setTimeout(() => {
-                            entry.target.classList.add('is-visible');
-                        }, i * 100); 
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.1 });
-
-            elementsToAnimate.forEach(el => {
-                if(el) {
-                    observer.observe(el);
-                }
-            });
-
-            // --- 3. Contact Form Submission ---
-            const contactForm = document.getElementById('contact-form');
-            if (contactForm) {
-                contactForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    alert('Thank you for your message! We will get back to you soon.');
-                    contactForm.reset(); // Clear the form
-                });
-            }
+        // Form Submit Animation
+        const form = document.getElementById('contact-form');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = form.querySelector('button');
+            const oldText = btn.innerText;
+            
+            btn.innerText = "Sending...";
+            btn.style.opacity = "0.7";
+            
+            setTimeout(() => {
+                alert("Message Sent! We'll be in touch shortly.");
+                form.reset();
+                btn.innerText = oldText;
+                btn.style.opacity = "1";
+            }, 1500);
         });
     </script>
-
 </body>
 </html>
