@@ -1,32 +1,297 @@
-{% extends 'patient/base_dashboard.html' %}
-{% block title %}Book Appointment{% endblock %}
-{% block nav_find_doctor %}active{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Appointment | HealthBook</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-{% block content %}
-<div class="card" style="max-width:600px;margin:auto;">
-    <h1>Book Appointment</h1>
-    <p>Dr. {{ doctor.fname }} {{ doctor.lname }} — <strong>{{ doctor.specialization }}</strong></p>
+    <style>
+        :root {
+            --bg-dark: #020617;
+            --glass-bg: rgba(15, 23, 42, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --primary-blue: #3b82f6;
+            --primary-green: #10b981;
+            --metallic-gradient: linear-gradient(135deg, #3b82f6 0%, #10b981 100%);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+            --success-bg: rgba(16, 185, 129, 0.15);
+            --success-border: rgba(16, 185, 129, 0.3);
+            --error-bg: rgba(239, 68, 68, 0.15);
+            --error-border: rgba(239, 68, 68, 0.3);
+        }
 
-    <form method="POST">
-        {% csrf_token %}
+        *, *::before, *::after { box-sizing: border-box; }
 
-        <div class="form-group">
-            <label>Select Date</label>
-            <input type="date" name="date" class="form-input" min="{{ today|date:'Y-m-d' }}" required>
+        html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+        }
+
+        .bg-mesh {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0;
+            background: 
+                linear-gradient(to bottom, rgba(2, 6, 23, 0.92), rgba(2, 6, 23, 0.98)),
+                url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=2070') no-repeat center center;
+            background-size: cover; background-attachment: fixed;
+        }
+
+        .navbar-container {
+            position: fixed; top: 1rem; left: 0; right: 0;
+            display: flex; justify-content: center; z-index: 100; padding: 0 1rem;
+        }
+
+        .navbar {
+            width: 100%; max-width: 1200px;
+            background: rgba(2, 6, 23, 0.9);
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border); border-radius: 100px;
+            padding: 0.8rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .navbar-brand {
+            font-size: 1.4rem; font-weight: 800; text-decoration: none;
+            background: var(--metallic-gradient);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px;
+        }
+
+        .nav-menu { display: flex; gap: 0.5rem; align-items: center; }
+        
+        .nav-link {
+            color: var(--text-muted); text-decoration: none; font-weight: 500;
+            padding: 8px 20px; border-radius: 50px; font-size: 0.9rem;
+            transition: all 0.3s ease; white-space: nowrap;
+        }
+        .nav-link:hover { color: var(--text-main); background: rgba(255,255,255,0.05); }
+        .nav-link.active {
+            background: rgba(16, 185, 129, 0.15); color: var(--primary-green);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.1); font-weight: 600;
+        }
+
+        .btn-logout-nav {
+            margin-left: 10px; background: rgba(248, 113, 113, 0.1); color: #f87171;
+            padding: 8px 20px; border-radius: 50px; font-size: 0.9rem; font-weight: 600;
+            text-decoration: none; transition: all 0.3s ease;
+            border: 1px solid rgba(248, 113, 113, 0.15); display: flex; align-items: center; gap: 8px;
+        }
+        .btn-logout-nav:hover { background: #f87171; color: white; box-shadow: 0 0 15px rgba(248, 113, 113, 0.4); }
+
+        .mobile-toggle { display: none; background: none; border: none; color: white; cursor: pointer; }
+
+        .container {
+            width: 100%; max-width: 1200px; margin: 0 auto; padding: 9rem 1.5rem 4rem 1.5rem;
+            position: relative; z-index: 1; flex-grow: 1;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        /* MESSAGE ALERTS */
+        .alert {
+            width: 100%; max-width: 600px; padding: 1rem 1.5rem; margin-bottom: 1.5rem;
+            border-radius: 16px; font-size: 0.95rem; display: flex; align-items: center; gap: 10px;
+            backdrop-filter: blur(10px);
+        }
+        .alert-success { background: var(--success-bg); border: 1px solid var(--success-border); color: #34d399; }
+        .alert-error { background: var(--error-bg); border: 1px solid var(--error-border); color: #f87171; }
+
+        .booking-card {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.9));
+            border: 1px solid var(--glass-border); border-radius: 28px; 
+            padding: 3rem; width: 100%; max-width: 600px;
+            box-shadow: var(--shadow-card); position: relative; overflow: hidden;
+        }
+        .booking-card::before {
+            content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.15), transparent 70%);
+            border-radius: 50%;
+        }
+        
+        .header-section { text-align: center; margin-bottom: 2.5rem; }
+        .header-section h1 { margin: 0 0 0.5rem 0; font-size: 2rem; font-weight: 700; }
+        .header-section p { color: var(--text-muted); margin: 0; font-size: 1.1rem; }
+        .doctor-highlight { color: var(--primary-green); font-weight: 700; display: block; margin-top: 0.5rem; font-size: 1.2rem; }
+        
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label {
+            display: block; color: var(--text-muted); font-size: 0.9rem; font-weight: 600;
+            margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        
+        .form-control {
+            width: 100%; padding: 14px; background: rgba(0,0,0,0.3);
+            border: 1px solid var(--glass-border); border-radius: 16px;
+            color: white; font-size: 1rem; font-family: 'Outfit', sans-serif; transition: 0.3s;
+        }
+        .form-control:focus { outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2); background: rgba(0,0,0,0.5); }
+        .form-control option { background: #0f172a; color: white; }
+        
+        textarea.form-control { resize: vertical; min-height: 100px; }
+
+        .btn-confirm {
+            width: 100%; background: var(--metallic-gradient); color: white; border: none;
+            padding: 16px; border-radius: 50px; font-weight: 700; font-size: 1.1rem;
+            cursor: pointer; margin-top: 1rem; transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+        }
+        .btn-confirm:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(59, 130, 246, 0.5); }
+
+        .dashboard-footer {
+            text-align: center; padding: 3rem 2rem; color: var(--text-muted);
+            font-size: 0.9rem; position: relative; z-index: 1; margin-top: auto;
+            border-top: 1px solid var(--glass-border);
+            background: rgba(2, 6, 23, 0.6); backdrop-filter: blur(10px);
+        }
+        .footer-links { display: flex; justify-content: center; gap: 2rem; margin-bottom: 1rem; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; transition: 0.2s; }
+        .footer-links a:hover { color: var(--text-main); }
+
+        @media (max-width: 1024px) {
+            .nav-menu {
+                position: fixed; top: 80px; left: 50%; transform: translateX(-50%) scale(0.95);
+                width: 90%; background: #1f2937; flex-direction: column; padding: 1.5rem;
+                border-radius: 20px; border: 1px solid var(--glass-border);
+                opacity: 0; pointer-events: none; transition: 0.3s; z-index: 99;
+                align-items: stretch; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            }
+            .nav-menu.is-open { opacity: 1; pointer-events: all; transform: translateX(-50%) scale(1); }
+            .nav-link { width: 100%; text-align: center; margin-bottom: 0.5rem; }
+            .btn-logout-nav { justify-content: center; margin-left: 0; margin-top: 10px; width: 100%; }
+            .mobile-toggle { display: block; }
+            .navbar-container { padding: 0 1rem; }
+        }
+
+        .icon-svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+</head>
+<body>
+    <div class="bg-mesh"></div>
+
+    <div class="navbar-container">
+        <nav class="navbar">
+            <a href="{% url 'patient_dashboard' %}" class="navbar-brand">
+                <svg class="icon-svg" style="width:24px; height:24px; stroke:url(#grad1);" viewBox="0 0 24 24">
+                    <defs><linearGradient id="grad1"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#10b981"/></linearGradient></defs>
+                    <line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                HealthBook
+            </a>
+
+            <div class="nav-menu" id="nav-menu">
+                <a href="{% url 'patient_dashboard' %}" class="nav-link">Dashboard</a>
+                <a href="{% url 'find_doctors' %}" class="nav-link">Find Doctors</a>
+                <a href="{% url "patient_appointments" %}" class="nav-link active">Appointments</a>
+                <a href="{% url 'patient_profile' %}" class="nav-link">Profile</a>
+                <a href="{% url 'patient_logout' %}" class="btn-logout-nav">
+                    <svg class="icon-svg" style="width:16px; height:16px;" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Logout
+                </a>
+            </div>
+
+            <button class="mobile-toggle" id="menu-btn">
+                <svg class="icon-svg" style="width:28px; height:28px;" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+        </nav>
+    </div>
+
+    <main class="container">
+        <!-- Backend Messages Display -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
+                    <svg class="icon-svg" viewBox="0 0 24 24" style="width:20px; flex-shrink:0;">
+                        {% if message.tags == 'success' %}
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        {% else %}
+                            <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        {% endif %}
+                    </svg>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="booking-card">
+            <div class="header-section">
+                <h1>Confirm Booking</h1>
+                <p>You are requesting an appointment with</p>
+                <span class="doctor-highlight">Dr. {{ doctor.fname }} {{ doctor.lname }} ({{ doctor.specialization }})</span>
+            </div>
+
+            <form method="POST">
+                {% csrf_token %}
+                
+                <!-- Optional: Pass Doctor ID explicitly if helpful for backend -->
+                <input type="hidden" name="doctor_id" value="{{ doctor.id }}">
+
+                <div class="form-group">
+                    <label>Select Date</label>
+                    <input type="date" name="date" id="date-picker" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Available Time Slot</label>
+                    <select name="time" class="form-select form-control" required>
+                        {% for t in slots %}
+                        <option value="{{ t }}">{{ t }}</option>
+                        {% empty %}
+                        <option disabled>No slots available</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Reason for Visit / Message</label>
+                    <textarea name="message" class="form-control" placeholder="Briefly describe your symptoms or reason for visit..."></textarea>
+                </div>
+
+                <button class="btn-confirm">Confirm Appointment</button>
+            </form>
         </div>
+    </main>
 
-        <div class="form-group">
-            <label>Select Time Slot</label>
-            <select name="time" class="form-select" required>
-                {% for t in slots %}
-                <option value="{{ t }}">{{ t }}</option>
-                {% empty %}
-                <option disabled>No slots available</option>
-                {% endfor %}
-            </select>
+    <footer class="dashboard-footer">
+        <div class="footer-links">
+            <a href="#">Support</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
         </div>
+        <p>&copy; 2025 HealthBook. All rights reserved.</p>
+    </footer>
 
-        <button class="btn-submit btn-submit-green" style="margin-top:1rem;">Confirm Appointment</button>
-    </form>
-</div>
-{% endblock %}
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const navMenu = document.getElementById('nav-menu');
+        if(menuBtn) {
+            menuBtn.addEventListener('click', () => {
+                navMenu.classList.toggle('is-open');
+            });
+        }
+
+        // Block Past Dates Logic
+        const datePicker = document.getElementById('date-picker');
+        if(datePicker) {
+            const today = new Date().toISOString().split('T')[0];
+            datePicker.setAttribute('min', today);
+        }
+
+        const card = document.querySelector('.booking-card');
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'all 0.6s ease-out';
+        setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, 100);
+    </script>
+</body>
+</html>

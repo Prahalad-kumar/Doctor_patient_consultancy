@@ -1,94 +1,477 @@
-{% extends 'patient/base_dashboard.html' %}
-{% block title %}Dashboard | HealthBook{% endblock %}
-{% block nav_dashboard %}active{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard | HealthBook</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-{% block extra_css %}
-<style>
-    .welcome-header { background: var(--card-dark); padding:2rem; border-radius:12px; text-align:center; margin-bottom:2rem; }
-    .appointment-list { list-style:none;padding:0;margin:0; }
-    .appointment-item { display:flex; justify-content:space-between; align-items:center; padding:1rem; border-radius:10px; margin-bottom:10px; background:var(--bg-dark); border:1px solid var(--border-color); }
-    .status-badge { padding:6px 10px; border-radius:8px; font-weight:700; font-size:0.85rem; }
-    .status-pending{ background:#fff3cd;color:#856404; }
-    .status-approved{ background:#d4edda;color:#155724; }
-    .status-cancelled{ background:#f8d7da;color:#721c24; }
-    .status-completed{ background:#cfe2ff;color:#084298; }
-    
-    .btn-book {
-        background: var(--primary-gradient);
-        color: var(--bg-dark);
-        padding: 10px 18px;
-        border-radius: 8px;
-        font-weight: 700;
-        text-decoration: none;
-        display: inline-block;
-        transition: 0.3s ease;
-    }
-    .btn-book:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    }
+    <style>
+        /* --- THEME VARIABLES --- */
+        :root {
+            --bg-dark: #020617;
+            --glass-bg: rgba(15, 23, 42, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --primary-blue: #3b82f6;
+            --primary-green: #10b981;
+            --metallic-gradient: linear-gradient(135deg, #3b82f6 0%, #10b981 100%);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.15);
+        }
 
-    .btn-cancel {
-        background:none; border:1px solid var(--error); color:var(--error);
-        padding:8px 14px; border-radius:8px; font-weight:600;
-    }
-</style>
-{% endblock %}
+        /* GLOBAL RESET */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
 
-{% block content %}
+        body {
+            color: var(--text-main);
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-<div class="welcome-header card">
-    <h1>Welcome, {{ patient.full_name }} 👋</h1>
-    <p>Manage your appointments easily.</p>
-</div>
+        /* --- BACKGROUND IMAGE MESH --- */
+        .bg-mesh {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+            z-index: 0; 
+            background: 
+                linear-gradient(to bottom, rgba(2, 6, 23, 0.92), rgba(2, 6, 23, 0.98)),
+                url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=2070') no-repeat center center;
+            background-size: cover;
+            background-attachment: fixed;
+        }
 
-<div class="card">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h3 style="margin:0;">Upcoming Appointments</h3>
+        /* --- FLOATING NAVBAR --- */
+        .navbar-container {
+            position: fixed; top: 1rem; left: 0; right: 0;
+            display: flex; justify-content: center;
+            z-index: 100; padding: 0 1rem;
+        }
 
-        <!-- ⭐ NEW BOOK APPOINTMENT BUTTON -->
-        <a href="{% url 'find_doctors' %}" class="btn-book">
-            + Book Appointment
-        </a>
+        .navbar {
+            width: 100%; max-width: 1200px;
+            background: rgba(2, 6, 23, 0.9);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 100px;
+            padding: 0.8rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        /* 1. Brand */
+        .navbar-brand {
+            font-size: 1.4rem; font-weight: 800; text-decoration: none;
+            background: var(--metallic-gradient);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px;
+        }
+
+        /* 2. Right-Aligned Navigation Links */
+        .nav-menu {
+            display: flex; gap: 0.5rem; align-items: center;
+        }
+        
+        .nav-link {
+            color: var(--text-muted); text-decoration: none; font-weight: 500;
+            padding: 8px 20px; border-radius: 50px; font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        .nav-link:hover { color: var(--text-main); background: rgba(255,255,255,0.05); }
+        .nav-link.active {
+            background: rgba(16, 185, 129, 0.15); color: var(--primary-green);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.1); font-weight: 600;
+        }
+
+        /* Logout Button Styling in Navbar */
+        .btn-logout-nav {
+            margin-left: 10px;
+            background: rgba(248, 113, 113, 0.1);
+            color: #f87171;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(248, 113, 113, 0.15);
+            display: flex; align-items: center; gap: 8px;
+            box-sizing: border-box;
+        }
+        .btn-logout-nav:hover {
+            background: #f87171;
+            color: white;
+            box-shadow: 0 0 15px rgba(248, 113, 113, 0.4);
+        }
+
+        /* Mobile Toggle */
+        .mobile-toggle { display: none; background: none; border: none; color: white; cursor: pointer; }
+
+        /* --- PAGE CONTENT --- */
+        .container {
+            max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;
+            padding-top: 9rem; /* Increased top padding for spacing */
+            position: relative;
+            z-index: 1;
+            flex-grow: 1;
+            padding-bottom: 4rem; /* Extra spacing at bottom */
+        }
+
+        /* Hero & Cards */
+        .hero-section {
+            display: grid; grid-template-columns: 1.5fr 1fr; gap: 2.5rem; /* Increased gap */
+            margin-bottom: 4rem; align-items: stretch; /* Stretch to match height */
+        }
+        .welcome-card {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.9));
+            border: 1px solid var(--glass-border); border-radius: 28px; 
+            padding: 4rem 3rem; /* Increased padding inside box */
+            position: relative; overflow: hidden;
+            box-shadow: var(--shadow-card);
+            min-height: 300px; /* Minimum height for larger feel */
+            display: flex; flex-direction: column; justify-content: center;
+        }
+        .welcome-card::before {
+            content: ''; position: absolute; top: 0; right: 0; width: 200px; height: 200px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15), transparent 70%);
+            border-radius: 50%; transform: translate(30%, -30%);
+        }
+        
+        .greeting-text {
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            display: inline-block;
+        }
+        .fade-out { opacity: 0; transform: translateY(-10px); }
+        
+        .welcome-header h1 { margin: 0; font-size: 3.2rem; font-weight: 800; line-height: 1.1; } /* Larger Font */
+        .gradient-text { background: var(--metallic-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .welcome-header p { font-size: 1.2rem; color: var(--text-muted); margin-top: 1.5rem; }
+        
+        .date-badge {
+            display: inline-block; padding: 8px 16px; background: rgba(16, 185, 129, 0.1);
+            border-radius: 20px; color: var(--primary-green); font-size: 0.95rem; font-weight: 600;
+            border: 1px solid rgba(16, 185, 129, 0.2); margin-bottom: 1.5rem;
+        }
+
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; } /* Increased gap */
+        .stat-card {
+            background: rgba(15, 23, 42, 0.7); border: 1px solid var(--glass-border);
+            padding: 2.5rem; border-radius: 24px; transition: 0.3s; text-decoration: none;
+            display: flex; flex-direction: column; justify-content: center;
+            box-shadow: var(--shadow-card);
+            min-height: 220px; /* Taller boxes */
+        }
+        .stat-card:hover { transform: translateY(-8px); border-color: var(--primary-blue); background: rgba(30, 41, 59, 0.9); }
+        .stat-icon {
+            width: 56px; height: 56px; border-radius: 16px; background: rgba(255,255,255,0.05);
+            display: grid; place-items: center; margin-bottom: 1.5rem; color: var(--text-main);
+            font-size: 1.5rem;
+        }
+        .stat-card h3 { margin: 0; font-size: 1.4rem; color: var(--text-main); font-weight: 700; }
+        .stat-card p { margin: 8px 0 0; color: var(--text-muted); font-size: 1rem; }
+
+        /* Appointments */
+        .section-header {
+            display: flex; justify-content: space-between; align-items: end; margin-bottom: 2rem;
+            border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;
+        }
+        .section-header h2 { margin: 0; font-size: 2.2rem; font-weight: 700; }
+        .btn-new {
+            background: var(--metallic-gradient); color: white; padding: 12px 24px;
+            border-radius: 50px; font-weight: 600; text-decoration: none;
+            display: flex; align-items: center; gap: 10px; font-size: 1rem;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+        }
+        .btn-new:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5); }
+
+        .app-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 2rem; } /* Wider cards, bigger gap */
+        .app-card {
+            background: rgba(15, 23, 42, 0.7); border: 1px solid var(--glass-border);
+            border-radius: 24px; overflow: hidden; transition: 0.3s;
+            box-shadow: var(--shadow-card);
+            min-height: 200px; /* Taller appointment cards */
+            display: flex; flex-direction: column;
+        }
+        .app-card:hover { transform: translateY(-8px); border-color: var(--primary-green); }
+        .app-header { padding: 2rem; display: flex; justify-content: space-between; }
+        .doctor-avatar {
+            width: 56px; height: 56px; border-radius: 16px; background: var(--metallic-gradient);
+            display: grid; place-items: center; font-weight: 700; font-size: 1.4rem; color: white;
+        }
+        .app-date-box { text-align: right; }
+        .app-date-box .day { display: block; font-size: 1.6rem; font-weight: 700; color: var(--text-main); }
+        .app-date-box .month { font-size: 0.9rem; color: var(--primary-green); text-transform: uppercase; font-weight: 700; }
+        
+        .app-body { padding: 0 2rem 2rem; flex-grow: 1; }
+        .app-body h3 { margin: 0; font-size: 1.3rem; font-weight: 700; }
+        .app-body p { margin: 8px 0 0; color: var(--text-muted); font-size: 1rem; }
+        
+        .app-footer {
+            padding: 1.2rem 2rem; border-top: 1px solid var(--glass-border);
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(0,0,0,0.2);
+        }
+        .status-pill {
+            padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase;
+        }
+        .st-pending { background: rgba(245, 158, 11, 0.1); color: #fbbf24; }
+        .st-approved { background: rgba(16, 185, 129, 0.1); color: #34d399; }
+        .st-cancelled { background: rgba(239, 68, 68, 0.1); color: #f87171; }
+        .st-completed { background: rgba(59, 130, 246, 0.1); color: #60a5fa; }
+
+        /* --- ENHANCED FOOTER --- */
+        .dashboard-footer {
+            text-align: center; 
+            padding: 3rem 2rem; 
+            color: var(--text-muted);
+            font-size: 0.9rem; 
+            position: relative; 
+            z-index: 1;
+            margin-top: auto;
+            border-top: 1px solid var(--glass-border);
+            background: rgba(2, 6, 23, 0.6);
+            backdrop-filter: blur(10px);
+        }
+        .footer-links {
+            display: flex; justify-content: center; gap: 2rem; margin-bottom: 1rem;
+        }
+        .footer-links a {
+            color: var(--text-muted); text-decoration: none; transition: 0.2s;
+        }
+        .footer-links a:hover { color: var(--text-main); }
+
+        /* Mobile Responsive */
+        @media (max-width: 1024px) {
+            .nav-menu {
+                position: fixed; top: 80px; left: 50%; transform: translateX(-50%) scale(0.95);
+                width: 90%; background: #1f2937; flex-direction: column; padding: 1.5rem;
+                border-radius: 20px; border: 1px solid var(--glass-border);
+                opacity: 0; pointer-events: none; transition: 0.3s; z-index: 99;
+                align-items: stretch; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            }
+            .nav-menu.is-open { opacity: 1; pointer-events: all; transform: translateX(-50%) scale(1); }
+            
+            .nav-link { width: 100%; text-align: center; margin-bottom: 0.5rem; }
+            .btn-logout-nav { justify-content: center; margin-left: 0; margin-top: 10px; width: 100%; }
+            
+            .mobile-toggle { display: block; }
+            .navbar-container { padding: 0 1rem; }
+            .hero-section { grid-template-columns: 1fr; }
+            
+            /* Adjust sizing for mobile */
+            .welcome-header h1 { font-size: 2.5rem; }
+            .welcome-card, .stat-card, .app-card { padding: 2rem; min-height: auto; }
+        }
+
+        /* Icons */
+        .icon-svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <div class="bg-mesh"></div>
+
+    <!-- FLOATING NAVBAR -->
+    <div class="navbar-container">
+        <nav class="navbar">
+            <a href="{% url 'patient_dashboard' %}" class="navbar-brand">
+                <!-- UPDATED LOGO: Simple cross -->
+                <svg class="icon-svg" style="width:24px; height:24px; stroke:url(#grad1);" viewBox="0 0 24 24">
+                    <defs><linearGradient id="grad1"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#10b981"/></linearGradient></defs>
+                    <line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                HealthBook
+            </a>
+
+            <!-- Right-Aligned Navigation + Logout -->
+            <div class="nav-menu" id="nav-menu">
+                <a href="{% url 'patient_dashboard' %}" class="nav-link active">Dashboard</a>
+                <a href="{% url 'find_doctors' %}" class="nav-link">Find Doctors</a>
+                <a href="{% url "patient_appointments" %}" class="nav-link">Appointments</a>
+                <a href="{% url 'patient_profile' %}" class="nav-link">Profile</a>
+                
+                <a href="{% url 'patient_logout' %}" class="btn-logout-nav">
+                    <svg class="icon-svg" style="width:16px; height:16px;" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Logout
+                </a>
+            </div>
+
+            <button class="mobile-toggle" id="menu-btn">
+                <svg class="icon-svg" style="width:28px; height:28px;" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+        </nav>
     </div>
 
-    <ul class="appointment-list" style="margin-top:1rem;">
-        {% if appointments %}
-            {% for app in appointments %}
-            <li class="appointment-item">
-                <div>
-                    <strong class="doctor-name">
-                        Dr. {{ app.doctor.fname }} {{ app.doctor.lname }}
-                    </strong>
-                    <div class="details">
-                        {{ app.doctor.specialization }} |
-                        {{ app.appointment_date|date:"M d, Y" }} at
-                        {{ app.appointment_time|time:"h:i A" }}
-                    </div>
+    <main class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div style="padding:1rem; margin-bottom:1rem; border-radius:12px; background:rgba(255,255,255,0.1);">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
 
-                    <div style="margin-top:5px;">
-                        <span class="status-badge 
-                            {% if app.status == 'Pending' %}status-pending
-                            {% elif app.status == 'Approved' %}status-approved
-                            {% elif app.status == 'Cancelled' %}status-cancelled
-                            {% else %}status-completed{% endif %}
-                        ">
+        <section class="hero-section">
+            <div class="welcome-card">
+                <span class="date-badge" id="current-date">Loading...</span>
+                <div class="welcome-header">
+                    <h1 class="greeting-text" id="greeting">Welcome,</h1>
+                    <h1><span class="gradient-text">{{ patient.full_name }}</span></h1>
+                    <p>Your health command center. Track appointments and manage your wellness.</p>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <a href="{% url 'find_doctors' %}" class="stat-card">
+                    <div class="stat-icon" style="color: #60a5fa; background: rgba(59, 130, 246, 0.15);">
+                        <svg class="icon-svg" style="width:32px; height:32px;" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </div>
+                    <h3>Find Doctors</h3>
+                    <p>Search & book specialists</p>
+                </a>
+                <a href="{% url 'patient_profile' %}" class="stat-card">
+                    <div class="stat-icon" style="color: #34d399; background: rgba(16, 185, 129, 0.15);">
+                        <svg class="icon-svg" style="width:32px; height:32px;" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </div>
+                    <h3>My Profile</h3>
+                    <p>Personal details & settings</p>
+                </a>
+            </div>
+        </section>
+
+        <div class="section-header">
+            <h2>Upcoming Appointments</h2>
+            <a href="{% url 'find_doctors' %}" class="btn-new">
+                <svg class="icon-svg" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                New Appointment
+            </a>
+        </div>
+
+        <div class="app-grid">
+            {% if appointments %}
+                {% for app in appointments %}
+                <div class="app-card">
+                    <div class="app-header">
+                        <div class="doctor-avatar">{{ app.doctor.fname|first }}{{ app.doctor.lname|first }}</div>
+                        <div class="app-date-box">
+                            <span class="month">{{ app.appointment_date|date:"M" }}</span>
+                            <span class="day">{{ app.appointment_date|date:"d" }}</span>
+                        </div>
+                    </div>
+                    <div class="app-body">
+                        <h3>Dr. {{ app.doctor.fname }} {{ app.doctor.lname }}</h3>
+                        <p>{{ app.doctor.specialization }}</p>
+                        <p style="margin-top:8px; display:flex; align-items:center; gap:6px; color:var(--text-main);">
+                            <svg class="icon-svg" style="width:16px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            {{ app.appointment_time|time:"h:i A" }}
+                        </p>
+                    </div>
+                    <div class="app-footer">
+                        <span class="status-pill 
+                            {% if app.status == 'Pending' %}st-pending
+                            {% elif app.status == 'Approved' %}st-approved
+                            {% elif app.status == 'Cancelled' %}st-cancelled
+                            {% else %}st-completed{% endif %}">
                             {{ app.status }}
                         </span>
+                        {% if app.status != "Cancelled" and app.status != "Completed" %}
+                        <a href="{% url 'update_status' app.id 'Cancelled' %}" class="btn-cancel" style="background:none; border:none; color:#94a3b8; font-weight:500; cursor:pointer;">Cancel</a>
+                        {% endif %}
                     </div>
                 </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state" style="grid-column:1/-1; text-align:center; padding:4rem; border:2px dashed var(--glass-border); border-radius:24px; color:var(--text-muted);">
+                    <h3>No Upcoming Appointments</h3>
+                    <p>It looks quiet here. Schedule a check-up to stay on top of your health!</p>
+                </div>
+            {% endif %}
+        </div>
+    </main>
 
-                {% if app.status != "Cancelled" and app.status != "Completed" %}
-                <a href="{% url 'update_status' app.id 'Cancelled' %}" class="btn-cancel">
-                    Cancel
-                </a>
-                {% endif %}
-            </li>
-            {% endfor %}
-        {% else %}
-            <li class="empty-state">No upcoming appointments yet.</li>
-        {% endif %}
-    </ul>
-</div>
+    <!-- Added Enhanced Footer -->
+    <footer class="dashboard-footer">
+        <div class="footer-links">
+            <a href="#">Support</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+        </div>
+        <p>&copy; 2025 HealthBook. All rights reserved.</p>
+    </footer>
 
-{% endblock %}
+    <script>
+        // Mobile Menu
+        const menuBtn = document.getElementById('menu-btn');
+        const navMenu = document.getElementById('nav-menu');
+        
+        if(menuBtn) {
+            menuBtn.addEventListener('click', () => {
+                navMenu.classList.toggle('is-open');
+            });
+        }
+
+        // Dynamic Continuous Greeting Loop
+        const greetingEl = document.getElementById('greeting');
+        const dateEl = document.getElementById('current-date');
+        
+        if(greetingEl && dateEl) {
+            const now = new Date();
+            const hrs = now.getHours();
+            let timeGreeting = "Good Morning,";
+            if (hrs >= 12 && hrs <= 17) timeGreeting = "Good Afternoon,";
+            else if (hrs >= 17) timeGreeting = "Good Evening,";
+
+            // List of greetings to cycle through
+            const greetings = [
+                "Welcome,",
+                timeGreeting,
+                "Stay Healthy,",
+                "Track Progress,"
+            ];
+            
+            let index = 0;
+            greetingEl.innerText = greetings[0]; // Set initial
+            
+            // Function to change greeting
+            const cycleGreeting = () => {
+                // 1. Fade out
+                greetingEl.classList.add('fade-out');
+
+                // 2. Change text after fade-out transition (500ms)
+                setTimeout(() => {
+                    index = (index + 1) % greetings.length;
+                    greetingEl.innerText = greetings[index];
+                    
+                    // 3. Fade back in
+                    greetingEl.classList.remove('fade-out');
+                }, 500);
+            };
+
+            // Run cycle every 3 seconds (3000ms)
+            setInterval(cycleGreeting, 3000);
+
+            dateEl.innerText = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+        }
+
+        // Entry Animations
+        const items = document.querySelectorAll('.stat-card, .app-card');
+        items.forEach((item, i) => {
+            item.style.opacity = '0'; item.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                item.style.transition = 'all 0.5s ease';
+                item.style.opacity = '1'; item.style.transform = 'translateY(0)';
+            }, 100 * i);
+        });
+    </script>
+</body>
+</html>

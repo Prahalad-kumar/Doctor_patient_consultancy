@@ -28,7 +28,11 @@
             box-sizing: border-box;
         }
 
-        html { scroll-behavior: smooth; }
+        html { 
+            scroll-behavior: smooth; 
+            overflow-x: hidden; /* Crucial for preventing scroll */
+            width: 100%;
+        }
         
         body {
             font-family: 'Inter', sans-serif;
@@ -36,7 +40,9 @@
             color: var(--text-light);
             margin: 0; 
             padding: 0;
-            overflow-x: hidden;
+            width: 100%;
+            max-width: 100vw; /* Ensures body never exceeds viewport */
+            overflow-x: hidden; /* Double safety */
             position: relative;
         }
 
@@ -47,6 +53,7 @@
             filter: blur(100px);
             z-index: -1;
             opacity: 0.4;
+            pointer-events: none; /* Prevents interference with clicks */
             animation: float-orb 10s infinite alternate ease-in-out;
         }
         .orb-1 {
@@ -85,6 +92,7 @@
             top: 0;
             z-index: 1000;
             transition: all 0.3s ease;
+            width: 100%;
         }
 
         .navbar-brand {
@@ -143,6 +151,7 @@
             text-decoration: none;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            white-space: nowrap;
         }
 
         .btn-login:hover {
@@ -159,6 +168,7 @@
             text-decoration: none;
             font-weight: 500;
             transition: all 0.2s ease;
+            white-space: nowrap;
         }
         .btn-patient-login:hover {
             border-color: var(--primary-blue);
@@ -173,6 +183,7 @@
             border: none;
             cursor: pointer;
             z-index: 1001;
+            padding: 0;
         }
         .hamburger-line {
             width: 25px;
@@ -194,6 +205,7 @@
             margin: 0 auto;
             gap: 4rem;
             position: relative;
+            width: 100%;
         }
 
         .hero-content {
@@ -253,6 +265,7 @@
         .hero-actions {
             display: flex;
             gap: 1rem;
+            flex-wrap: wrap;
         }
 
         .btn {
@@ -299,6 +312,7 @@
             border-radius: 24px;
             overflow: visible;
             z-index: 1;
+            width: 100%;
         }
 
         .hero-img {
@@ -351,12 +365,14 @@
             padding: 6rem 2rem;
             background: var(--bg-secondary);
             position: relative;
+            width: 100%;
         }
 
         .section-header {
             text-align: center;
             max-width: 700px;
             margin: 0 auto 4rem auto;
+            width: 100%;
         }
 
         .section-header h2 {
@@ -375,6 +391,7 @@
             gap: 2rem;
             max-width: 1300px;
             margin: 0 auto;
+            width: 100%;
         }
 
         .feature-card {
@@ -426,6 +443,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 4rem;
             align-items: center;
+            width: 100%;
         }
         
         .split-content h2 { font-size: 2.5rem; margin-bottom: 1.5rem; }
@@ -437,19 +455,24 @@
         
         .split-image-container {
             position: relative;
+            width: 100%;
         }
         .split-image-container img {
             width: 100%;
             border-radius: 24px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            position: relative; /* Bring image above blob */
+            z-index: 2;
         }
         .bg-blob {
             position: absolute;
-            width: 100%; height: 100%;
-            top: 20px; left: 20px;
+            width: calc(100% - 20px); /* FIX: Prevent 100% width + left offset */
+            height: 100%;
+            top: 20px; 
+            left: 20px;
             background: var(--card-bg);
             border-radius: 24px;
-            z-index: -1;
+            z-index: 1;
             border: 1px solid var(--border-color);
         }
 
@@ -461,6 +484,7 @@
             color: var(--text-muted);
             background: var(--bg-dark);
             font-size: 0.9rem;
+            width: 100%;
         }
 
         /* --- Responsive Design --- */
@@ -486,13 +510,28 @@
             .card-bottom-right { right: 0; }
             
             .check-list li { justify-content: center; }
-            .bg-blob { top: 10px; left: 10px; }
+            
+            /* Fix Blob for Tablet */
+            .bg-blob { 
+                top: 10px; 
+                left: 10px; 
+                width: calc(100% - 10px); /* Ensure it stays within bounds */
+            }
+            
+            .image-container {
+                max-width: 80%;
+                margin: 0 auto;
+            }
         }
 
         @media (max-width: 768px) {
             /* Mobile Navigation Logic */
             .mobile-nav-toggle {
                 display: block;
+            }
+
+            .navbar {
+                padding: 0 1.5rem; /* Slightly reduce padding */
             }
 
             .nav-menu {
@@ -558,12 +597,44 @@
                 transform: rotate(-45deg) translate(5px, -6px);
             }
 
-            .hero h1 { font-size: 2.5rem; }
-            .hero-actions { flex-direction: column; width: 100%; }
+            /* Hero Mobile Adjustments */
+            .hero {
+                padding: 3rem 1.5rem;
+            }
+
+            .hero h1 { 
+                font-size: 2.5rem; 
+                word-wrap: break-word; /* Prevent long words breaking layout */
+            }
+            
+            .hero-actions { 
+                flex-direction: column; 
+                width: 100%; 
+            }
+            
             .btn { width: 100%; }
             
+            /* FIX: Remove rotation on mobile to prevent edges sticking out */
+            .hero-img {
+                transform: none;
+                width: 100%;
+            }
+            
+            .hero-img:hover {
+                transform: none;
+            }
+            
+            .image-container {
+                max-width: 100%; /* Allow full width on mobile */
+            }
+
             .floating-card {
                 display: none; /* Hide floating stats on very small screens to save space */
+            }
+
+            /* Features Grid Mobile */
+            .features-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
