@@ -1,31 +1,339 @@
-{% extends "base_auth.html" %}
-{% block title %}Doctor Login{% endblock %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Doctor Login - HealthBook</title>
+    
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons (Phosphor Icons) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-{% block content %}
-<div class="auth-card">
-    <div class="auth-header">
-        <h1>Doctor Portal</h1>
-        <p>Sign in to your account</p>
-    </div>
+    <style>
+        /* --- GLOBAL RESET & VARIABLES --- */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
 
-    <form method="POST" action="{% url 'doctor_login' %}">
-        {% csrf_token %}
+        :root {
+            --primary-blue: #2563eb;
+            --primary-green: #059669;
+            --icon-yellow: #facc15; 
+            --text-light: #ffffff;
+            --text-muted: #cbd5e1;
+            
+            --card-bg: rgba(15, 23, 42, 0.85);
+            --input-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --success: #10b981;
+            --error: #ef4444;
+            
+            --metallic-gradient: linear-gradient(135deg, #1e3a8a 0%, #2563eb 45%, #059669 100%);
+        }
 
-        <div class="form-group">
-            <label for="email-id">Email</label>
-            <input id="email-id" name="email" class="form-input" type="email" required>
+        body {
+            background: 
+                linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.9)),
+                url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            
+            color: var(--text-light);
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            overflow-x: hidden;
+        }
+
+        /* --- CONTAINER --- */
+        .container {
+            width: 100%;
+            max-width: 480px; 
+            margin: 0 auto;
+        }
+
+        /* --- AUTH CARD --- */
+        .auth-card {
+            background-color: var(--card-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 24px;
+            padding: 3rem 2.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            width: 100%;
+            
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+        }
+        .auth-card.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- HEADER --- */
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .auth-header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 0 0 0.5rem 0;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .auth-header p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin: 0;
+        }
+
+        /* --- ALERT MESSAGES (NEW) --- */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid transparent;
+            animation: slideIn 0.3s ease-out;
+        }
+        .alert-error {
+            background-color: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #6ee7b7;
+        }
+        .alert i { font-size: 1.2rem; }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- INPUTS --- */
+        .form-group { margin-bottom: 1.5rem; }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .field-icon {
+            position: absolute;
+            left: 14px;
+            color: var(--icon-yellow);
+            font-size: 1.3rem;
+            pointer-events: none;
+            z-index: 10;
+            filter: drop-shadow(0 0 5px rgba(250, 204, 21, 0.3));
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px 14px 46px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background-color: var(--input-bg);
+            color: var(--text-light);
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background-color: rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            z-index: 10;
+            transition: color 0.2s;
+        }
+        .password-toggle:hover { color: white; }
+
+        /* --- BUTTON --- */
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #10b981 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 5s ease infinite;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .btn-submit i { transition: transform 0.3s ease; }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.6);
+        }
+        .btn-submit:hover i { transform: translateX(5px); }
+        .btn-submit:active { transform: translateY(0); }
+
+        /* --- FOOTER --- */
+        .auth-footer {
+            margin-top: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+        .auth-footer a { color: #34d399; text-decoration: none; font-weight: 600; transition: color 0.2s; }
+        .auth-footer a:hover { color: #6ee7b7; text-decoration: underline; }
+        
+        /* --- RESPONSIVE --- */
+        @media (max-width: 480px) {
+            body { padding: 1rem; }
+            .auth-card { padding: 2rem 1.5rem; }
+            .auth-header h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="container">
+        <div class="auth-card" id="loginCard">
+            <div class="auth-header">
+                <h1>HealthBook</h1>
+                <p>Sign in to your professional portal</p>
+            </div>
+
+            <!-- ERROR MESSAGES BLOCK -->
+            <!-- Supports standard Django messages framework -->
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+                    <i class="ph-fill {% if message.tags == 'error' %}ph-warning-circle{% else %}ph-check-circle{% endif %}"></i>
+                    <span>{{ message }}</span>
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Supports direct 'error' context variable -->
+            {% if error %}
+            <div class="alert alert-error">
+                <i class="ph-fill ph-warning-circle"></i>
+                <span>{{ error }}</span>
+            </div>
+            {% endif %}
+
+
+            <!-- DJANGO FORM ACTION -->
+            <form id="loginForm" method="POST" action="{% url 'doctor_login' %}">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="email-id">Email Address</label>
+                    <div class="input-wrapper">
+                        <i class="ph ph-envelope-simple field-icon"></i>
+                        <input id="email-id" name="email" class="form-input" type="email" placeholder="doctor@healthbook.com" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password-id">Password</label>
+                    <div class="input-wrapper">
+                        <i class="ph ph-lock-key field-icon"></i>
+                        <input id="password-id" name="password" class="form-input" type="password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('password-id', this)">
+                            <i class="ph ph-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    Login
+                    <i class="ph-bold ph-sign-in"></i>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                Don't have an account? <a href="{% url 'create_account' %}">Sign Up</a>
+            </div>
         </div>
+    </main>
 
-        <div class="form-group">
-            <label for="password-id">Password</label>
-            <input id="password-id" name="password" class="form-input" type="password" required>
-        </div>
+    <script>
+        // 1. Entrance Animation
+        document.addEventListener('DOMContentLoaded', () => {
+            const card = document.getElementById('loginCard');
+            setTimeout(() => {
+                card.classList.add('is-visible');
+            }, 100);
+        });
 
-        <button type="submit" class="btn-submit" style="margin-top: 1rem;">Login</button>
-    </form>
-
-    <div class="auth-footer">
-        Don't have an account? <a href="{% url 'create_account' %}">Sign Up</a>
-    </div>
-</div>
-{% endblock %}
+        // 2. Password Toggle Function
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.replace('ph-eye', 'ph-eye-slash');
+            } else {
+                input.type = "password";
+                icon.classList.replace('ph-eye-slash', 'ph-eye');
+            }
+        }
+    </script>
+</body>
+</html>

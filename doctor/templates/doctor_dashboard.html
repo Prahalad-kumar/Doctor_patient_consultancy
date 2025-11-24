@@ -1,285 +1,749 @@
-{% extends "base.html" %}
-{% block title %}Dashboard{% endblock %}
-{% block nav_dashboard %}active{% endblock %}
-
-{% block extra_css %}
-<style>
-    /* ---------------- */
-    /* Base Enhancements */
-    /* ---------------- */
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Doctor Dashboard - HealthBook</title>
     
-    /* Assuming .card is in base.html, adding hover/shadows for a dynamic feel */
-    .card {
-        transition: all 0.2s ease-in-out;
-    }
-    .card:hover {
-        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-        transform: translateY(-2px);
-    }
-
-    .welcome-header { 
-        background: linear-gradient(90deg, var(--card-dark), #3a3b4e); 
-        border-radius:12px; 
-        padding:2.5rem; 
-        margin-bottom:2rem; 
-        border: 1px solid var(--border-color);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    /* ---------------- */
-    /* Layout Grid */
-    /* ---------------- */
-    .dashboard-grid { 
-        display:grid; 
-        grid-template-columns: 2fr 1fr; 
-        gap:2rem; 
-    }
+    <!-- Icons (Phosphor Icons) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-    /* ---------------- */
-    /* Appointment List */
-    /* ---------------- */
-    .appointment-list { list-style:none; padding:0; margin:0; }
-
-    .appointment-item {
-        display:flex;
-        justify-content:space-between;
-        /* Align items to the top instead of center for better vertical rhythm */
-        align-items:flex-start; 
-        padding:1.5rem;
-        border-radius:10px;
-        border:1px solid var(--border-color);
-        background:var(--bg-dark);
-        margin-bottom:1rem;
-        gap: 1.5rem; /* Add gap for spacing */
-        transition: all 0.2s ease-in-out;
-    }
-
-    .appointment-item:hover {
-        border-color: var(--accent-teal);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        transform: translateY(-2px);
-    }
-
-    .appt-info {
-        /* This div will now grow and shrink */
-        flex-grow: 1;
-    }
-
-    .appt-meta { 
-        color:var(--text-muted); 
-        font-size:0.95rem; 
-        margin-top: 4px;
-        line-height: 1.5;
-    }
-
-    .status-badge {
-        padding:6px 10px;
-        border-radius:8px;
-        font-weight:700;
-        font-size:0.85rem;
-        display:inline-block;
-        margin-top:12px;
-    }
-
-    .status-pending{ background:#fff3cd; color:#856404; }
-    .status-approved{ background:#d4edda; color:#155724; }
-    .status-cancelled{ background:#f8d7da; color:#721c24; }
-    .status-completed{ background:#cfe2ff; color:#084298; }
-
-    /* ---------------- */
-    /* Buttons */
-    /* ---------------- */
-    .appt-actions {
-        display:flex;
-        flex-direction:column;
-        gap:8px;
-        align-items:flex-end;
-        /* Prevent buttons from shrinking */
-        flex-shrink: 0;
-    }
-
-    /* Base button style for transitions and hover */
-    .btn-view, .btn-cancel, .btn-complete {
-        padding:6px 12px;
-        border-radius:8px;
-        font-weight:700;
-        text-decoration:none;
-        display:inline-block;
-        text-align: center;
-        transition: all 0.2s ease-in-out;
-    }
-
-    .btn-view:hover, .btn-cancel:hover, .btn-complete:hover {
-        filter: brightness(1.15);
-        transform: scale(1.02);
-    }
-
-    .btn-view {
-        background:var(--accent-teal);
-        color:var(--bg-dark);
-    }
-
-    .btn-cancel {
-        background:#dc3545;
-        color:white !important;
-    }
-
-    .btn-complete {
-        background:#0d6efd;
-        color:white !important;
-    }
-
-    /* ---------------- */
-    /* Statistics */
-    /* ---------------- */
-    .stat-item {
-        padding:1.5rem;
-        border-radius:8px;
-        border:1px solid var(--border-color);
-        background:var(--bg-dark);
-        text-align:center;
-        transition: all 0.2s ease-in-out;
-    }
-
-    .stat-item:hover {
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        transform: translateY(-2px);
-        border-color: var(--accent-teal);
-    }
-    
-    .empty-state {
-        text-align: center;
-        padding: 3rem 1rem;
-        color: var(--text-muted);
-        font-style: italic;
-        font-size: 1.1rem;
-    }
-
-    /* ---------------- */
-    /* Responsiveness */
-    /* ---------------- */
-    @media (max-width: 900px) {
-        .dashboard-grid { 
-            /* Stack grid items on smaller screens */
-            grid-template-columns: 1fr; 
+    <style>
+        /* --- GLOBAL RESET & VARIABLES --- */
+        *, *::before, *::after {
+            box-sizing: border-box;
         }
-    }
-    
-    @media (max-width: 600px) {
-        .appointment-item {
-            /* Stack info and buttons vertically on mobile */
+
+        :root {
+            --primary-blue: #2563eb;
+            --primary-green: #059669;
+            --secondary-cyan: #06b6d4;
+            --accent-yellow: #facc15; 
+            
+            --text-light: #ffffff;
+            --text-muted: #cbd5e1;
+            
+            /* Glassmorphism Variables */
+            --glass-bg: rgba(15, 23, 42, 0.65); /* Lighter glass */
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-blur: blur(20px);
+            
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            
+            --metallic-gradient: linear-gradient(135deg, #1e3a8a 0%, #2563eb 45%, #059669 100%);
+            
+            /* Dynamic Text Gradient (Green + Blue) */
+            --dynamic-text-gradient: linear-gradient(to right, #34d399, #60a5fa);
+            
+            /* Navbar Height for padding calculations */
+            --nav-height: 80px;
+        }
+
+        body {
+            /* Background Image - Adjusted Overlay for Lighter Feel */
+            background: 
+                linear-gradient(rgba(30, 41, 59, 0.85), rgba(30, 41, 59, 0.88)), /* Lighter overlay */
+                url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            
+            color: var(--text-light);
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
             flex-direction: column;
-            align-items: stretch;
-            gap: 0.5rem;
-            padding: 1rem;
+            padding-top: 20px; /* Space for floating navbar */
+        }
+
+        /* --- NAVBAR WRAPPER (To center the floating bar) --- */
+        .navbar-wrapper {
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            width: 100%;
+            padding: 0 1.5rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* --- FLOATING ROUNDED NAVBAR --- */
+        .navbar-container {
+            width: 100%;
+            max-width: 1200px;
+            background-color: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px; /* Fully rounded edges */
+            padding: 0.8rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Logo Box Style - Transparent & Clean */
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            text-decoration: none;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            padding: 0;
+            border-radius: 0;
+            background: transparent;
+            border: none;
+            transition: all 0.3s ease;
         }
         
-        .appt-actions {
-            /* Make buttons horizontal and full-width on mobile */
-            flex-direction: row;
+        .navbar-brand:hover {
+            background: transparent;
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+
+        .navbar-brand span { 
+            background: var(--dynamic-text-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Navigation Links */
+        .nav-menu {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .nav-item {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 30px; /* Matches navbar roundness */
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            color: var(--text-light);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            margin-left: 0.5rem;
+            padding: 10px 24px;
+        }
+        .btn-logout:hover {
+            background: rgba(239, 68, 68, 0.25);
+            color: white;
+            border-color: #ef4444;
+        }
+
+        /* Mobile Toggle */
+        .mobile-nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 1.8rem;
+            cursor: pointer;
+            padding: 5px;
+            transition: color 0.2s;
+        }
+        .mobile-nav-toggle:hover { color: var(--primary-blue); }
+
+        /* --- LAYOUT CONTAINER --- */
+        .container {
             width: 100%;
-            margin-top: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
-        .appt-actions > a {
-            /* Make buttons grow to fill space */
-            flex-grow: 1;
+        /* --- GLASS CARDS --- */
+        .glass-card {
+            background-color: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.3); /* Softer shadow */
+            margin-bottom: 2rem;
+            
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+        .glass-card.is-visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
+        /* --- DECORATIVE WELCOME HEADER --- */
         .welcome-header {
-            padding: 1.5rem;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
-    }
 
-</style>
-{% endblock %}
+        /* Decorative background blob */
+        .welcome-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, rgba(16, 185, 129, 0.1) 60%, transparent 80%);
+            border-radius: 50%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+        }
 
-{% block content %}
+        .welcome-title {
+            font-size: 2.2rem;
+            margin: 0 0 0.5rem 0;
+            color: var(--text-light);
+            min-height: 3rem; 
+            display: flex;
+            align-items: center;
+        }
+        
+        /* Typewriter Cursor */
+        .cursor {
+            display: inline-block;
+            width: 3px;
+            height: 2.5rem;
+            background-color: var(--secondary-cyan);
+            margin-left: 5px;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        .dynamic-text-span {
+            background: var(--dynamic-text-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+        
+        .date-display {
+            color: var(--secondary-cyan);
+            font-weight: 600;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.08);
+            padding: 8px 16px;
+            border-radius: 30px;
+            width: fit-content;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
 
-<!-- Header -->
-<div class="welcome-header card">
-    <h1>Welcome, Dr. {{ doctor.fname }} {{ doctor.lname }}!</h1>
-    <p>Here is a quick overview of your appointments.</p>
-</div>
+        /* --- DASHBOARD GRID --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
 
-<div class="dashboard-grid">
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0 0 1.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--secondary-cyan);
+        }
 
-    <!-- LEFT: TODAY'S APPOINTMENTS -->
-    <section class="card">
-        <h3>Today's Appointments</h3>
+        /* --- APPOINTMENT LIST --- */
+        .appointment-list { list-style: none; padding: 0; margin: 0; }
+        
+        .appointment-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .appointment-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(5px);
+        }
 
-        {% if todays_appointments %}
-        <ul class="appointment-list">
-            {% for app in todays_appointments %}
-            <li class="appointment-item">
+        .appt-info h4 { margin: 0 0 0.4rem 0; font-size: 1.15rem; color: white; font-weight: 700; }
+        .appt-meta {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .appt-meta i { color: var(--secondary-cyan); margin-right: 8px; }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-top: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .status-pending { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .status-approved { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .status-cancelled { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .status-completed { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+
+        .appt-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 110px;
+        }
+        .btn-action {
+            padding: 10px 16px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-approve { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid transparent; }
+        .btn-approve:hover { background: rgba(16, 185, 129, 0.8); color: white; }
+        .btn-cancel { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid transparent; }
+        .btn-cancel:hover { background: rgba(239, 68, 68, 0.8); color: white; }
+        .btn-complete { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid transparent; }
+        .btn-complete:hover { background: rgba(59, 130, 246, 0.8); color: white; }
+
+        /* --- STATS CARD --- */
+        .stat-grid { display: grid; gap: 1rem; }
+        .stat-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--glass-border);
+            transition: transform 0.2s;
+        }
+        .stat-item:hover {
+            transform: translateY(-3px);
+            border-color: var(--secondary-cyan);
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--metallic-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.25rem;
+        }
+        .stat-label { color: var(--text-muted); font-size: 0.95rem; font-weight: 500; }
+
+        /* --- ALERTS --- */
+        .alert {
+            padding: 14px 20px;
+            border-radius: 16px;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid transparent;
+            animation: slideIn 0.3s ease-out;
+        }
+        .alert-error { background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.4); color: #fca5a5; }
+        .alert-success { background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.4); color: #6ee7b7; }
+        
+        .empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 3rem;
+            font-style: italic;
+            font-size: 1.1rem;
+        }
+
+        /* --- FOOTER --- */
+        .footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 2rem 0 1rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--glass-border);
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .footer-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .footer-link:hover { color: var(--secondary-cyan); }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 900px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .container { padding: 1.5rem; }
+            .navbar-container { border-radius: 24px; padding: 0.8rem 1.5rem; } /* Less round on smaller screens */
+        }
+
+        @media (max-width: 768px) {
+            .mobile-nav-toggle { display: block; }
+            
+            /* Adjust dropdown for floating navbar */
+            .nav-menu {
+                position: absolute;
+                top: 80px; /* Below floating navbar */
+                left: 50%;
+                transform: translateX(-50%) translateY(-20px);
+                width: 95%; /* Almost full width */
+                max-width: 400px;
+                background-color: rgba(15, 23, 42, 0.95);
+                backdrop-filter: blur(20px);
+                border: 1px solid var(--glass-border);
+                border-radius: 20px;
+                flex-direction: column;
+                padding: 1.5rem;
+                gap: 0.5rem;
                 
-                <!-- LEFT INFO -->
-                <!-- Added a wrapper div for better flex control -->
-                <div class="appt-info">
-                    <div style="font-weight:700; font-size: 1.1rem;">{{ app.patient.full_name }}</div>
+                opacity: 0;
+                pointer-events: none;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                z-index: 90;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            }
+            
+            .nav-menu.is-open { 
+                opacity: 1;
+                pointer-events: auto;
+                transform: translateX(-50%) translateY(0); 
+            }
+            
+            .nav-links { flex-direction: column; width: 100%; gap: 0.5rem; }
+            .nav-item { width: 100%; text-align: center; padding: 12px; border-radius: 12px; background-color: rgba(255, 255, 255, 0.03); }
+            .btn-logout { width: 100%; text-align: center; margin: 0.5rem 0 0 0; padding: 12px; }
+            .welcome-title { font-size: 1.6rem; min-height: 4rem; align-items: flex-start;}
+        }
+        
+        @media (max-width: 500px) {
+            .appointment-item { flex-direction: column; }
+            .appt-actions { width: 100%; flex-direction: row; }
+            .btn-action { flex: 1; }
+            .navbar-wrapper { padding: 0 1rem; }
+        }
+    </style>
+</head>
 
-                    <div class="appt-meta">
-                        {{ app.patient.phone_number }} • {{ app.patient.email }} <br>
-                        {{ app.appointment_date|date:"M d, Y" }} • {{ app.appointment_time|time:"h:i A" }}
-                    </div>
+<body>
 
-                    <span class="status-badge 
-                        {% if app.status == 'Pending' %}status-pending
-                        {% elif app.status == 'Approved' %}status-approved
-                        {% elif app.status == 'Cancelled' %}status-cancelled
-                        {% else %}status-completed{% endif %}
-                    ">
-                        {{ app.status }}
-                    </span>
-                </div>
+    <!-- NAVBAR WRAPPER -->
+    <div class="navbar-wrapper">
+        <div class="navbar-container">
+            <!-- Boxed Logo with Unified Color -->
+            <a href="{% url 'doctor_dashboard' %}" class="navbar-brand">
+                Health<span>Book</span>
+            </a>
 
-                <!-- RIGHT BUTTONS -->
-                <!-- ⭐ HTML Change: Added class="appt-actions" for better styling hook -->
-                <div class="appt-actions">
-                    {% if app.status == "Pending" %}
-                        <a href="{% url 'update_status' app.id 'Approved' %}" class="btn-view">Approve</a>
-                    {% endif %}
+            <button class="mobile-nav-toggle" id="mobileNavToggle">
+                <i class="ph ph-list"></i>
+            </button>
 
-                    {% if app.status == "Pending" or app.status == "Approved" %}
-                        <a href="{% url 'update_status' app.id 'Cancelled' %}" class="btn-cancel">Cancel</a>
-                    {% endif %}
-
-                    {% if app.status == "Approved" %}
-                        <a href="{% url 'update_status' app.id 'Completed' %}" class="btn-complete">Complete</a>
-                    {% endif %}
-                </div>
-
-            </li>
-            {% endfor %}
-        </ul>
-        {% else %}
-        <div class="empty-state">No appointments for today.</div>
-        {% endif %}
-    </section>
-
-    <!-- RIGHT: STATISTICS -->
-    <aside>
-        <div class="card" style="padding:1.5rem 1rem;">
-            <h3>At a Glance</h3>
-
-            <div style="display:grid;gap:1rem;">
-                <div class="stat-item">
-                    <div style="font-size:2rem;font-weight:800;color:var(--accent-teal)">
-                        {{ todays_count }}
-                    </div>
-                    <div style="color:var(--text-muted)">Today's Appointments</div>
-                </div>
-
-                <div class="stat-item">
-                    <div style="font-size:2rem;font-weight:800;color:var(--accent-teal)">
-                        {{ weekly_count }}
-                    </div>
-                    <div style="color:var(--text-muted)">This Week</div>
+            <div class="nav-menu" id="navMenu">
+                <div class="nav-links">
+                    <a href="{% url 'doctor_dashboard' %}" class="nav-item active">Dashboard</a>
+                    <a href="{% url 'doctor_schedule' %}" class="nav-item">My Schedule</a>
+                    <a href="{% url 'doctor_profile' %}" class="nav-item">Profile</a>
+                    <a href="{% url 'doctor_logout' %}" class="nav-item btn-logout">Logout</a>
                 </div>
             </div>
         </div>
-    </aside>
+    </div>
 
-</div>
+    <!-- MAIN CONTENT -->
+    <main class="container">
+        
+        <!-- MESSAGES / ALERTS -->
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+                <i class="ph-fill {% if message.tags == 'error' %}ph-warning-circle{% else %}ph-check-circle{% endif %}"></i>
+                <span>{{ message }}</span>
+            </div>
+            {% endfor %}
+        {% endif %}
 
-{% endblock %}
+        <!-- WELCOME CARD -->
+        <div class="glass-card welcome-header">
+            <div class="welcome-content">
+                <!-- Typewriter Animation Title -->
+                <h1 class="welcome-title">
+                    <span id="dynamicText" class="dynamic-text-span"></span><span class="cursor"></span>
+                </h1>
+                
+                <!-- Date Display -->
+                <div id="dateDisplay" class="date-display">
+                    <!-- Javascript will insert date here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- GRID LAYOUT -->
+        <div class="dashboard-grid">
+            
+            <!-- LEFT COLUMN: APPOINTMENTS -->
+            <section class="glass-card">
+                <div class="section-title">
+                    <i class="ph-fill ph-calendar-check"></i>
+                    Today's Appointments
+                </div>
+
+                {% if todays_appointments %}
+                <ul class="appointment-list">
+                    {% for app in todays_appointments %}
+                    <li class="appointment-item">
+                        
+                        <!-- Info -->
+                        <div class="appt-info">
+                            <h4>{{ app.patient.full_name }}</h4>
+                            <div class="appt-meta">
+                                <span><i class="ph ph-phone"></i> {{ app.patient.phone_number }}</span>
+                                <span><i class="ph ph-envelope-simple"></i> {{ app.patient.email }}</span>
+                                <span><i class="ph ph-clock"></i> {{ app.appointment_time|time:"h:i A" }}</span>
+                            </div>
+                            
+                            <!-- Status Badge Logic -->
+                            <span class="status-badge 
+                                {% if app.status == 'Pending' %}status-pending
+                                {% elif app.status == 'Approved' %}status-approved
+                                {% elif app.status == 'Cancelled' %}status-cancelled
+                                {% else %}status-completed{% endif %}">
+                                {{ app.status }}
+                            </span>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="appt-actions">
+                            {% if app.status == "Pending" %}
+                                <a href="{% url 'update_status' app.id 'Approved' %}" class="btn-action btn-approve">
+                                    <i class="ph-bold ph-check"></i> Approve
+                                </a>
+                            {% endif %}
+
+                            {% if app.status == "Pending" or app.status == "Approved" %}
+                                <a href="{% url 'update_status' app.id 'Cancelled' %}" class="btn-action btn-cancel">
+                                    <i class="ph-bold ph-x"></i> Cancel
+                                </a>
+                            {% endif %}
+
+                            {% if app.status == "Approved" %}
+                                <a href="{% url 'update_status' app.id 'Completed' %}" class="btn-action btn-complete">
+                                    <i class="ph-bold ph-check-square"></i> Done
+                                </a>
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="ph ph-coffee" style="font-size: 2rem; margin-bottom: 15px; display:block; color:var(--secondary-cyan); opacity:0.7;"></i>
+                        No appointments scheduled for today.
+                    </div>
+                {% endif %}
+            </section>
+
+            <!-- RIGHT COLUMN: STATS -->
+            <aside>
+                <div class="glass-card">
+                    <div class="section-title">
+                        <i class="ph-fill ph-chart-bar"></i>
+                        Quick Stats
+                    </div>
+                    
+                    <div class="stat-grid">
+                        <div class="stat-item">
+                            <div class="stat-number">{{ todays_count }}</div>
+                            <div class="stat-label">Today</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">{{ weekly_count }}</div>
+                            <div class="stat-label">This Week</div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+        </div>
+        
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div class="footer-links">
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Terms of Service</a>
+                <a href="#" class="footer-link">Support</a>
+            </div>
+            <p>&copy; 2023 HealthBook. All rights reserved.</p>
+        </footer>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Entrance Animations for Cards
+            const cards = document.querySelectorAll('.glass-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('is-visible');
+                }, index * 100);
+            });
+            
+            // 2. Initialize Logic
+            initTypewriterEffect();
+            initDateDisplay();
+        });
+
+        // --- TYPEWRITER & WIPE LOGIC ---
+        function initTypewriterEffect() {
+            const textElement = document.getElementById('dynamicText');
+            if (!textElement) return;
+
+            const docName = "Dr. {{ doctor.fname }} {{ doctor.lname }}";
+            const phrases = [
+                `Welcome, ${docName}!`,
+                `${getTimeBasedGreeting()}, ${docName}!`
+            ];
+            
+            let currentPhraseIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+            let typeSpeed = 100; // Speed of typing
+
+            function type() {
+                const currentPhrase = phrases[currentPhraseIndex];
+                
+                if (isDeleting) {
+                    // Wiping back
+                    textElement.innerText = currentPhrase.substring(0, charIndex - 1);
+                    charIndex--;
+                    typeSpeed = 50; // Faster when deleting
+                } else {
+                    // Typing forward
+                    textElement.innerText = currentPhrase.substring(0, charIndex + 1);
+                    charIndex++;
+                    typeSpeed = 100; // Normal typing speed
+                }
+
+                if (!isDeleting && charIndex === currentPhrase.length) {
+                    // Finished typing full phrase, wait before wiping
+                    isDeleting = true;
+                    typeSpeed = 2000; // Pause at full text (2s)
+                } else if (isDeleting && charIndex === 0) {
+                    // Finished wiping, switch to next phrase
+                    isDeleting = false;
+                    currentPhraseIndex = (currentPhraseIndex + 1) % phrases.length;
+                    typeSpeed = 500; // Pause before starting new type
+                }
+
+                setTimeout(type, typeSpeed);
+            }
+
+            // Start loop
+            type();
+        }
+
+        function getTimeBasedGreeting() {
+            const hour = new Date().getHours();
+            if (hour < 12) return "Good Morning";
+            if (hour < 17) return "Good Afternoon";
+            return "Good Evening";
+        }
+
+        // --- DATE DISPLAY LOGIC ---
+        function initDateDisplay() {
+            const dateElement = document.getElementById('dateDisplay');
+            if (!dateElement) return;
+
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateString = now.toLocaleDateString('en-US', options);
+
+            dateElement.innerHTML = `<i class="ph ph-calendar-blank"></i> ${dateString}`;
+        }
+
+        // --- MOBILE MENU TOGGLE ---
+        const toggleBtn = document.getElementById('mobileNavToggle');
+        const navMenu = document.getElementById('navMenu');
+        const icon = toggleBtn.querySelector('i');
+
+        toggleBtn.addEventListener('click', () => {
+            navMenu.classList.toggle('is-open');
+            if (navMenu.classList.contains('is-open')) {
+                icon.classList.replace('ph-list', 'ph-x');
+            } else {
+                icon.classList.replace('ph-x', 'ph-list');
+            }
+        });
+    </script>
+</body>
+</html>

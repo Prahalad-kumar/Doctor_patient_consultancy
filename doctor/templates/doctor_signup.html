@@ -1,84 +1,534 @@
-{% extends "base_auth.html" %}
-{% block title %}Doctor Sign Up{% endblock %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Doctor Sign Up - HealthBook</title>
+    
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons (Phosphor Icons) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-{% block extra_css %}
-<style>
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.5rem; }
-    .form-group.full-width { grid-column: 1 / -1; }
-    @media (max-width:600px){ .form-grid{grid-template-columns:1fr} }
-</style>
-{% endblock %}
+    <style>
+        /* --- GLOBAL RESET & VARIABLES --- */
+        *, *::before, *::after {
+            box-sizing: border-box; /* Critical for responsive layouts */
+        }
 
-{% block content %}
-<div class="auth-card">
-    <div class="auth-header">
-        <h1>Doctor Registration</h1>
-        <p>Join our professional network</p>
-    </div>
+        :root {
+            --primary-blue: #2563eb;
+            --primary-green: #059669;
+            --icon-yellow: #facc15; 
+            --text-light: #ffffff;
+            --text-muted: #cbd5e1;
+            
+            --card-bg: rgba(15, 23, 42, 0.85);
+            --input-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --success: #10b981;
+            --error: #ef4444;
+            
+            --metallic-gradient: linear-gradient(135deg, #1e3a8a 0%, #2563eb 45%, #059669 100%);
+        }
 
-    <form method="POST" action="{% url 'create_account' %}">
-        {% csrf_token %}
-        <div class="form-grid">
-            <h4 class="form-divider">Login Details</h4>
+        body {
+            /* Background Image with Overlay */
+            background: 
+                linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.9)),
+                url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            
+            color: var(--text-light);
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem; /* Added horizontal padding to body */
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
 
-            <div class="form-group">
-                <label for="fname">First Name</label>
-                <input id="fname" name="fname" class="form-input" required>
-            </div>
-            <div class="form-group">
-                <label for="lname">Last Name</label>
-                <input id="lname" name="lname" class="form-input" required>
-            </div>
-            <div class="form-group full-width">
-                <label for="email">Email</label>
-                <input id="email" name="email" class="form-input" type="email" required>
+        /* --- CONTAINER --- */
+        .container {
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* --- AUTH CARD --- */
+        .auth-card {
+            background-color: var(--card-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 24px;
+            padding: 2.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            width: 100%;
+            
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+        }
+        .auth-card.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- HEADER --- */
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .auth-header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 0 0 0.5rem 0;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .auth-header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        /* --- ALERT MESSAGES (ADDED) --- */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid transparent;
+            animation: slideIn 0.3s ease-out;
+            grid-column: 1 / -1; /* Ensure it spans full width if inside grid context */
+        }
+        .alert-error {
+            background-color: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #6ee7b7;
+        }
+        .alert i { font-size: 1.2rem; }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- FORM GRID --- */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Default to 2 columns */
+            gap: 1.25rem;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-divider {
+            grid-column: 1 / -1;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #34d399;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin: 1.5rem 0 1rem 0;
+            font-weight: 700;
+        }
+        .form-divider:first-of-type { margin-top: 0; }
+
+        /* --- INPUTS --- */
+        .form-group { margin-bottom: 0.5rem; }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .field-icon {
+            position: absolute;
+            left: 14px;
+            color: var(--icon-yellow);
+            font-size: 1.2rem;
+            pointer-events: none;
+            z-index: 10;
+            filter: drop-shadow(0 0 5px rgba(250, 204, 21, 0.3));
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 12px 16px 12px 42px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background-color: var(--input-bg);
+            color: var(--text-light);
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            appearance: none; /* Removes default OS styling on iOS */
+            -webkit-appearance: none;
+        }
+        
+        /* Select arrow fix for appearance: none */
+        .form-select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23cbd5e1' viewBox='0 0 256 256'%3E%3Cpath d='M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 16px;
+            padding-right: 40px; 
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background-color: rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+        }
+        
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+            padding-left: 42px;
+        }
+        
+        .form-group textarea + .field-icon { top: 14px; }
+        .form-select option { background-color: #0f172a; color: white; }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px; /* Bigger touch target */
+            z-index: 10;
+        }
+
+        /* --- BUTTON --- */
+        .btn-submit {
+            grid-column: 1 / -1;
+            width: 100%;
+            padding: 16px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #10b981 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 5s ease infinite;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .btn-submit i { transition: transform 0.3s ease; }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.6);
+        }
+        .btn-submit:hover i { transform: translateX(5px); }
+        .btn-submit:active { transform: translateY(0); }
+
+        /* --- FOOTER --- */
+        .auth-footer {
+            margin-top: 1.5rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .auth-footer a { color: #34d399; text-decoration: none; font-weight: 600; }
+        
+        /* --- TOAST --- */
+        .toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            background: rgba(6, 78, 59, 0.95);
+            backdrop-filter: blur(8px);
+            color: #34d399;
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateX(150%);
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 1000;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            max-width: 90%; /* Prevent overflow on mobile */
+        }
+        .toast.show { transform: translateX(0); }
+
+        /* --- RESPONSIVE BREAKPOINTS --- */
+        
+        /* Tablet Portrait (768px and down) */
+        @media (max-width: 768px) {
+            .auth-card {
+                padding: 2rem;
+            }
+            .form-grid {
+                column-gap: 1rem;
+            }
+        }
+
+        /* Mobile Landscape & Large Phones (600px and down) */
+        @media (max-width: 600px) {
+            .auth-card {
+                padding: 1.5rem;
+                border-radius: 16px;
+            }
+            .auth-header h1 {
+                font-size: 1.75rem;
+            }
+            /* Stack everything on small screens */
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+
+        /* Small Phones (380px and down) */
+        @media (max-width: 380px) {
+            body { padding: 1rem 0.5rem; }
+            .auth-card { padding: 1.25rem; }
+            .auth-header h1 { font-size: 1.5rem; }
+            .form-input, .form-select { font-size: 16px; } /* Prevents iOS zoom */
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="container">
+        <div class="auth-card" id="signupCard">
+            <div class="auth-header">
+                <h1>HealthBook</h1>
+                <p>Doctor Registration Portal</p>
             </div>
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input id="password" name="password" class="form-input" type="password" required>
-            </div>
-            <div class="form-group">
-                <label for="confirm_password">Confirm Password</label>
-                <input id="confirm_password" name="confirm_password" class="form-input" type="password" required>
-            </div>
+            <!-- ERROR MESSAGES BLOCK (ADDED) -->
+            <!-- Supports standard Django messages framework -->
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+                    <i class="ph-fill {% if message.tags == 'error' %}ph-warning-circle{% else %}ph-check-circle{% endif %}"></i>
+                    <span>{{ message }}</span>
+                </div>
+                {% endfor %}
+            {% endif %}
 
-            <h4 class="form-divider">Professional Details</h4>
+            <!-- Supports direct 'error' context variable -->
+            {% if error %}
+            <div class="alert alert-error">
+                <i class="ph-fill ph-warning-circle"></i>
+                <span>{{ error }}</span>
+            </div>
+            {% endif %}
 
-            <div class="form-group">
-                <label for="specialty">Specialty</label>
-                <input id="specialty" name="specialty" class="form-input" required>
-            </div>
-            <div class="form-group">
-                <label for="experience_years">Years of Experience</label>
-                <input id="experience_years" name="experience_years" class="form-input" type="number" min="0" required>
-            </div>
-            <div class="form-group full-width">
-                <label for="qualification">Qualification</label>
-                <input id="qualification" name="qualification" class="form-input" required>
-            </div>
+            <!-- DJANGO FORM ACTION -->
+            <form id="signupForm" method="POST" action="{% url 'create_account' %}">
+                {% csrf_token %}
+                
+                <div class="form-grid">
+                    <!-- Section 1 -->
+                    <h4 class="form-divider">Account Credentials</h4>
 
-            <div class="form-group full-width">
-                <label for="contact_number">Contact Number</label>
-                <input id="contact_number" name="contact_number" class="form-input" required>
-            </div>
+                    <div class="form-group">
+                        <label for="fname">First Name</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-user field-icon"></i>
+                            <input id="fname" name="fname" class="form-input" placeholder="e.g. Sarah" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="lname">Last Name</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-user field-icon"></i>
+                            <input id="lname" name="lname" class="form-input" placeholder="e.g. Connor" required>
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="email">Email Address</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-envelope-simple field-icon"></i>
+                            <input id="email" name="email" class="form-input" type="email" placeholder="doctor@healthbook.com" required>
+                        </div>
+                    </div>
 
-            <div class="form-group full-width">
-                <label for="office_address">Office Address</label>
-                <textarea id="office_address" name="office_address" class="form-textarea"></textarea>
-            </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-lock-key field-icon"></i>
+                            <input id="password" name="password" class="form-input" type="password" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('password', this)">
+                                <i class="ph ph-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm_password">Confirm Password</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-lock-key field-icon"></i>
+                            <input id="confirm_password" name="confirm_password" class="form-input" type="password" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('confirm_password', this)">
+                                <i class="ph ph-eye"></i>
+                            </button>
+                        </div>
+                    </div>
 
-            <div class="form-group full-width">
-                <label for="bio">Bio</label>
-                <textarea id="bio" name="bio" class="form-textarea" placeholder="Tell patients about yourself..."></textarea>
+                    <!-- Section 2 -->
+                    <h4 class="form-divider">Medical Profile</h4>
+
+                    <div class="form-group">
+                        <label for="specialty">Specialty</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-stethoscope field-icon"></i>
+                            <select id="specialty" name="specialty" class="form-select" required>
+                                <option value="" disabled selected>Select your field</option>
+                                <option value="Cardiology">Cardiology</option>
+                                <option value="Dermatology">Dermatology</option>
+                                <option value="Neurology">Neurology</option>
+                                <option value="Pediatrics">Pediatrics</option>
+                                <option value="Orthopedics">Orthopedics</option>
+                                <option value="General Practice">General Practice</option>
+                                <option value="Surgery">Surgery</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="experience_years">Experience (Years)</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-briefcase field-icon"></i>
+                            <input id="experience_years" name="experience_years" class="form-input" type="number" min="0" placeholder="e.g. 5" required>
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="qualification">Qualifications</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-graduation-cap field-icon"></i>
+                            <input id="qualification" name="qualification" class="form-input" placeholder="e.g. MBBS, MD, PhD" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="contact_number">Work Phone</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-phone-call field-icon"></i>
+                            <input id="contact_number" name="contact_number" class="form-input" type="tel" placeholder="+1 (555) 000-0000" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="office_address">Clinic / Hospital Address</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-map-pin field-icon" style="top: 14px;"></i>
+                            <textarea id="office_address" name="office_address" class="form-textarea" placeholder="Full street address..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="bio">Professional Bio</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-article field-icon" style="top: 14px;"></i>
+                            <textarea id="bio" name="bio" class="form-textarea" placeholder="Briefly describe your expertise..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    Create HealthBook Profile
+                    <i class="ph-bold ph-arrow-right"></i>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                Already on HealthBook? <a href="{% url 'doctor_login' %}">Log in here</a>
             </div>
         </div>
+    </main>
 
-        <button type="submit" class="btn-submit btn-submit-green" style="margin-top: 1.5rem;">Create Account</button>
-    </form>
-
-    <div class="auth-footer">
-        Already have an account? <a href="{% url 'doctor_login' %}">Login</a>
+    <!-- Success Toast -->
+    <div class="toast" id="successToast">
+        <i class="ph-fill ph-check-circle" style="font-size: 1.5rem;"></i>
+        <span>Welcome to HealthBook! Redirecting...</span>
     </div>
-</div>
-{% endblock %}
+
+    <script>
+        // 1. Entrance Animation
+        document.addEventListener('DOMContentLoaded', () => {
+            const card = document.getElementById('signupCard');
+            setTimeout(() => {
+                card.classList.add('is-visible');
+            }, 100);
+        });
+
+        // 2. Password Toggle Function
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.replace('ph-eye', 'ph-eye-slash');
+            } else {
+                input.type = "password";
+                icon.classList.replace('ph-eye-slash', 'ph-eye');
+            }
+        }
+
+        // 3. Optional: Add client-side visual feedback on submit, though Django handles logic
+        const form = document.getElementById('signupForm');
+        form.addEventListener('submit', function(e) {
+            // Note: In a real Django setup, you usually let the form submit normally.
+            // If using AJAX, you'd preventDefault. For standard Django, we just show animation.
+            const btn = document.getElementById('submitBtn');
+            btn.innerHTML = 'Processing...';
+            btn.style.opacity = '0.7';
+        });
+    </script>
+</body>
+</html>
