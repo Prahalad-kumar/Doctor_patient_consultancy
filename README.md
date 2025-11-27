@@ -247,17 +247,17 @@ gunicorn doctor_patient_consultancy.wsgi:application --bind 0.0.0.0:$PORT --work
 ---
 
 ## 🏠 Home Page
-![Home Page](./screenshots/home-page.png)
+![Home Page](./screenshots/home.png)
 
 ---
 
 ## 🔐 Doctor Login Page
-![Doctor Login Page](./screenshots/doctor-login-page.png)
+![Doctor Login Page](./screenshots/doctor-login.png)
 
 ---
 
 ## 🔐 Patient Login Page
-![Patient Login Page](./screenshots/patient-login-page.png)
+![Patient Login Page](./screenshots/patient-login.png)
 
 ---
 
@@ -281,23 +281,24 @@ gunicorn doctor_patient_consultancy.wsgi:application --bind 0.0.0.0:$PORT --work
 
 ---
 
-## 📝 Patient Profile Update
-![Patient Profile Update](./screenshots/patient-update-profile.png)
+## 📝 Doctor Profile Update
+![Patient Profile Update](./screenshots/doctor-update-profile.png)
 
 ---
 
-## 📝 Doctor Profile Update
-![Doctor Profile Update](./screenshots/doctor-update-profile.png)
+## 📝 Doctor find Page
+![Doctor find Page](./screenshots/find-doctor.png)
 
 ---
 
 ## 📅 Appointment Booking
-![Appointment Booking](./screenshots/appointment-booking.png)
+![Appointment Booking](./screenshots/Booking.png)
 
 ---
 
 ## 📋 Doctor Appointment Management
-![Doctor Appointment Management](./screenshots/doctor-appointments.png)
+![Doctor Appointment Management](./screenshots/doctor-sechdule.png)
+
 
 ---
 
