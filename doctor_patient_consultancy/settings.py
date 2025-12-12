@@ -1,7 +1,3 @@
-"""
-Django settings for doctor_patient_consultancy project.
-Fully secured version for Railway deployment.
-"""
 
 from pathlib import Path
 import os
