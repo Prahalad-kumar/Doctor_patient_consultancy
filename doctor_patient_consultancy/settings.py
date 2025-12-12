@@ -140,3 +140,10 @@ LOGIN_URL = '/patient/login/'
 LOGIN_REDIRECT_URL = '/patient/dashboard/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+SECRET_KEY = "django-insecure-s9"
+DEBUG = False
+ALLOWED_HOSTS = ["web-production-bdd99.up.railway.app", "127.0.0.1", "localhost"]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://web-production-bdd99.up.railway.app"
+]
