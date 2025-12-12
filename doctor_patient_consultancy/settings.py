@@ -91,12 +91,19 @@ WSGI_APPLICATION = 'doctor_patient_consultancy.wsgi.application'
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=DATABASE_URL,
-        conn_max_age=600,
-        ssl_require=True
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': 'LkhopoZHnSwsbViduiNxJnYkhbQPhLXS',
+        'HOST': 'gondola.proxy.rlwy.net',
+        'PORT': '20816',
+        'OPTIONS': {
+            'sslmode': 'require'
+        }
+    }
 }
+
 
 # =========================
 # PASSWORD VALIDATION
