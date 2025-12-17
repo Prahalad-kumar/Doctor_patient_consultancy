@@ -15,7 +15,13 @@ if not SECRET_KEY:
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ["*"]  # Railway handles domain routing
+ALLOWED_HOSTS = ["*"]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://healthbook.up.railway.app",
+    "https://*.railway.app",
+]
+
 
 # =========================
 # APPLICATIONS
