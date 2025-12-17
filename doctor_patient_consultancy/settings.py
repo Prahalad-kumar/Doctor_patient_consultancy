@@ -57,7 +57,8 @@ ROOT_URLCONF = 'doctor_patient_consultancy.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / "templates"],
+        'DIRS': [BASE_DIR / "templates",
+                 BASE_DIR/'index.html'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
