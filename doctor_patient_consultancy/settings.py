@@ -1,7 +1,3 @@
-"""
-Django settings for doctor_patient_consultancy project.
-Fully secured version for Railway deployment.
-"""
 
 from pathlib import Path
 import os
@@ -19,18 +15,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # Debug mode also from environment
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-# Railway domain for production
-RAILWAY_DOMAIN = os.getenv("RAILWAY_PUBLIC_DOMAIN")
 
-if RAILWAY_DOMAIN:
-    ALLOWED_HOSTS = [RAILWAY_DOMAIN, "127.0.0.1", "localhost"]
-else:
-    ALLOWED_HOSTS = ["*"]
-
-# Trusted origins
-CSRF_TRUSTED_ORIGINS = (
-    [f"https://{RAILWAY_DOMAIN}"] if RAILWAY_DOMAIN else []
-)
 
 # =========================
 # APPLICATIONS
@@ -95,13 +80,11 @@ WSGI_APPLICATION = 'doctor_patient_consultancy.wsgi.application'
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=DATABASE_URL,
-        conn_max_age=600,
-        ssl_require=True
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
-
 # =========================
 # PASSWORD VALIDATION
 # =========================
