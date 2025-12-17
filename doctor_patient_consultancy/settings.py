@@ -1,4 +1,3 @@
-
 from pathlib import Path
 import os
 import dj_database_url
@@ -9,17 +8,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 # =========================
 
-# Load SECRET_KEY from environment (never store in code!)
+# REQUIRED: Must exist in Railway Variables
 SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    raise RuntimeError("SECRET_KEY environment variable is not set")
 
-# Debug mode also from environment
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-
+ALLOWED_HOSTS = ["*"]  # Railway handles domain routing
 
 # =========================
 # APPLICATIONS
 # =========================
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -36,6 +37,7 @@ INSTALLED_APPS = [
 # =========================
 # MIDDLEWARE
 # =========================
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -51,13 +53,11 @@ ROOT_URLCONF = 'doctor_patient_consultancy.urls'
 # =========================
 # TEMPLATES
 # =========================
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            BASE_DIR / "templates",
-            BASE_DIR,
-        ],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -73,21 +73,21 @@ TEMPLATES = [
 WSGI_APPLICATION = 'doctor_patient_consultancy.wsgi.application'
 
 # =========================
-# DATABASE
+# DATABASE (Railway PostgreSQL)
 # =========================
 
-# Secure: Database URL from Railway environment variable
-DATABASE_URL = os.getenv("DATABASE_URL")
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    "default": dj_database_url.config(
+        default=os.getenv("DATABASE_URL"),
+        conn_max_age=600,
+        ssl_require=True
+    )
 }
+
 # =========================
 # PASSWORD VALIDATION
 # =========================
+
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -98,6 +98,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # =========================
 # INTERNATIONALIZATION
 # =========================
+
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
@@ -106,23 +107,21 @@ USE_TZ = True
 # =========================
 # STATIC FILES
 # =========================
+
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
-
-if (BASE_DIR / "static").exists():
-    STATICFILES_DIRS = [BASE_DIR / "static"]
-else:
-    STATICFILES_DIRS = []
 
 # =========================
 # MEDIA FILES
 # =========================
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "media"
 
 # =========================
 # AUTH REDIRECTS
 # =========================
+
 LOGIN_URL = '/patient/login/'
 LOGIN_REDIRECT_URL = '/patient/dashboard/'
 
