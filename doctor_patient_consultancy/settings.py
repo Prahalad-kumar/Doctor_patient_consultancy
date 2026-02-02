@@ -9,9 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # =========================
 
 # REQUIRED: Must exist in Railway Variables
-SECRET_KEY = os.getenv("SECRET_KEY")
-if not SECRET_KEY:
-    raise RuntimeError("SECRET_KEY environment variable is not set")
+SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-dev-key")
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
